@@ -1,0 +1,29 @@
+
+<header class="top" id="top">
+  <div class="wrap top-in">
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 34 34" aria-hidden="true"><rect x="7" y="7" width="20" height="20" fill="none" stroke="var(--ink)" stroke-width="2"/><rect x="12" y="12" width="10" height="10" fill="var(--accent)"/><g stroke="var(--ink)" stroke-width="2"><path d="M12 1v6M17 1v6M22 1v6M12 27v6M17 27v6M22 27v6M1 12h6M1 17h6M1 22h6M27 12h6M27 17h6M27 22h6"/></g></svg>
+      <div><div class="co" id="coName">Garaj Labs</div><div class="date" id="date">1 Oca 2015</div></div>
+    </div>
+    <div class="speed" role="group" aria-label="Oyun hızı" id="speed">
+      <button data-speed="0" aria-label="Duraklat"><svg viewBox="0 0 16 14"><rect x="3" y="1" width="3.5" height="12"/><rect x="9.5" y="1" width="3.5" height="12"/></svg></button>
+      <button data-speed="1" aria-label="Normal hız"><svg viewBox="0 0 16 14"><path d="M4 1l9 6-9 6z"/></svg></button>
+      <button data-speed="2" aria-label="Hızlı"><svg viewBox="0 0 16 14"><path d="M1 1l7 6-7 6zM8 1l7 6-7 6z"/></svg></button>
+      <button data-speed="3" aria-label="Çok hızlı"><svg viewBox="0 0 16 14"><path d="M0 2l5.3 5L0 12zM5.3 2l5.3 5-5.3 5zM10.6 2l5.4 5-5.4 5z"/></svg></button>
+    </div>
+ <button class="sndbtn" data-act="cmd" aria-label="Ara ve git (Ctrl+K)" title="Ara ve git (Ctrl+K)"><svg viewBox="0 0 20 18" aria-hidden="true"><circle cx="8.5" cy="8" r="5.5"/><path d="M12.6 12.2l4.6 4.3"/></svg></button>
+ <button class="sndbtn hide-m" data-act="help" aria-label="Ansiklopedi" title="Ansiklopedi (?)"><svg viewBox="0 0 20 18" aria-hidden="true"><path d="M3 3h5a2 2 0 0 1 2 2v11a2 2 0 0 0-2-2H3zM17 3h-5a2 2 0 0 0-2 2v11a2 2 0 0 1 2-2h5z"/></svg></button>
+    <button class="sndbtn hide-m" id="sndBtn" data-act="sndtoggle" aria-pressed="false" aria-label="Sesi aç ya da kapat" title="Ses"></button>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="wrap tkrow" id="tkrow"></div>
+</header>
+<nav class="tabs" aria-label="Bölümler"><div class="wrap tabs-in" id="tabs" role="tablist"></div></nav>
+<main class="wrap" id="main"></main>
+<div id="coach"></div>
+<div id="advfab" class="advfab"></div>
+<nav class="bnav" aria-label="Ana bölümler"><div id="bnav" role="tablist"></div></nav>
+<div id="modal"></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="mcta" id="mcta" hidden><button class="btn primary" type="button"></button></div>
+
