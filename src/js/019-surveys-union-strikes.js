@@ -29,7 +29,8 @@ function unionMonthly(){
     if(cur>=pl.base+10){moodAdd((LANG_EN?"Survey promise kept":'Anket sözü tutuldu'),5,180);U.press=Math.max(0,U.press-10);(G.flags=G.flags||{}).listen=true;news((LANG_EN?`You kept your survey promise: ${SURV_D[pl.k].toLocaleLowerCase(LOC)} score ${Math.round(pl.base)} → ${Math.round(cur)}. The team appreciated it.`:`Ankette verdiğin söz tutuldu: ${SURV_D[pl.k].toLocaleLowerCase(LOC)} puanı ${Math.round(pl.base)} → ${Math.round(cur)}. Ekip bunu takdir etti.`),'good',true);}
     else{moodAdd((LANG_EN?"Survey promise broken":'Anket sözü tutulmadı'),-6,180);U.press=Math.min(100,U.press+10);news((LANG_EN?`You broke your survey promise on ${SURV_D[pl.k].toLocaleLowerCase(LOC)} (${Math.round(pl.base)} → ${Math.round(cur)}). The team is disappointed.`:`Ankette ${SURV_D[pl.k].toLocaleLowerCase(LOC)} konusunda verdiğin söz tutulmadı (${Math.round(pl.base)} → ${Math.round(cur)}). Ekip hayal kırıklığında.`),'bad',true);}}
   if(es.length<UNION_MIN&&U.st==='none'){U.press*=0.9;return;}
-  const r=survCalc(),avgM=es.reduce((a,e)=>a+e.morale,0)/es.length;
+  /* sendika varken tüm çalışanlar çıkarılırsa anket hesaplanamaz (v166 düzeltmesi: oyun burada çöküyordu) */
+  const r=survCalc();if(!r||!es.length){U.press*=0.9;return;}const avgM=es.reduce((a,e)=>a+e.morale,0)/es.length;
   const delta=(55-avgM)*0.12+(48-r.pay)*0.08+(G.pace==='crunch'?3:0)+Math.min(5,(G.layoff||0)*0.3)+(es.length>100?1.5:es.length>50?0.8:0.3);
   U.press=clamp(U.press*0.9+delta*1.2,0,100);
   if(U.st==='union'){for(const e of es)if(e.um==null)e.um=Math.random()<memProb(e);

@@ -15,6 +15,10 @@ const DEF_BASE=0.45,DEF_BRAND=1;
 const defLose=(cat,c,firm)=>clamp(DEF_BASE+0.05*theirPat(c,cat)-0.07*myPat(cat)-LAW[firm].b,0.1,0.9);
 const crossChance=(cat,c)=>clamp(0.1+0.09*myPat(cat)-0.02*theirPat(c,cat)+relOf(c)/200,0.03,0.85);
 const dmgEst=(c,cat)=>Math.min(Math.max(0,c.cash)*0.2,catRev(c.id,cat)*2.2);
+const SUIT_GRACE=540,SUIT_GAP=3,SUIT_CAP=0.2;
+const SUIT_DETER=0.15,suitDeter=cat=>Math.min(0.8,SUIT_DETER*myPat(cat));
+/* rakibin talebi: aylık kategori cirosunun 2–4 katı, ama nakdinin en çok %20'si (en az 150K) */
+const suitClaim=cat=>Math.round(Math.min(Math.max(200000*infl(),catRev('P',cat)*rnd(2,4)),Math.max(150000*infl(),Math.max(0,G.cash)*SUIT_CAP)));
 function initPats(c){if(c.pats)return;c.pats={};for(const f of c.focus)c.pats[f]=Math.round(c.emp/180*c.tech);}
 function filePatent(id,n,cats,w,free){
   G.patPend.push({id:nid(),src:id,n,cats,w,due:G.day+rint(120,240),ch:free?0.9:0.8});if(id)G.patFiled[id]=true;
@@ -30,11 +34,16 @@ function patMonthly(){
     if(G.day>=k.end){resolveCase(k);continue;}
     if(k.role==='pl'&&!k.offered&&!G.pending&&caseWinP(k,c)>=0.5&&Math.random()<0.25){k.offered=true;triggerChoice('settle',{kid:k.id,amt:Math.round(dmgEst(c,k.cat)*rnd(0.45,0.7))});}
   }
-  if(!G.pending&&G.day>=(G.suitCool||0)&&G.day>300){
+  /* Rakip patent davası (v166 dengesi): ilk 18 ay koruma; patent farkı en az 3 olmalı; her patentin %15 caydırıcılığı var (eskiden 2: sende 0, onlarda 2 patent varken dava gelirdi);
+     talep nakdinin en çok %20'si (en az 150K). Eskiden talep aylık kategori cirosunun 2–4 katıydı ve 5–15 ayda bir gelen uzlaşmalar genç şirketlerin
+     kasasının yarısını götürüyordu: bot ölçümünde garajdan başlayan koşulardaki iflasların ana nedeni buydu. */
+  if(!G.pending&&G.day>=(G.suitCool||0)&&G.day>SUIT_GRACE){
     const opts=[];for(const c of liveComps()){if(c.aggr<0.35||crossWith(c.id)||relOf(c)>=30||G.cases.some(k=>k.cid===c.id))continue;initPats(c);
-      for(const cat of c.focus){const sh=myActive(cat).reduce((a,p)=>a+p.share,0);if(sh>=0.05&&theirPat(c,cat)-myPat(cat)>=2)opts.push([c,cat]);}}
-    if(opts.length&&Math.random()<0.06){const [c,cat]=pick(opts);G.suitCool=G.day+150;
-      triggerChoice('suitIn',{cid:c.id,cat,claim:Math.round(Math.max(200000*infl(),catRev('P',cat)*rnd(2,4)))});}
+      for(const cat of c.focus){const sh=myActive(cat).reduce((a,p)=>a+p.share,0);if(sh>=0.05&&theirPat(c,cat)-myPat(cat)>=SUIT_GAP)opts.push([c,cat]);}}
+    /* caydırıcılık: o kategorideki her patentin dava ihtimalini %15 düşürür (en çok %80) — karşı dava riski */
+    const [c,cat]=opts.length?pick(opts):[];
+    if(c&&Math.random()<0.06*(1-suitDeter(cat))){G.suitCool=G.day+150;
+      triggerChoice('suitIn',{cid:c.id,cat,claim:suitClaim(cat)});}
   }
 }
 /* davacı olarak kazanma ihtimali; rakibin doğrudan kopya sökümüne açılan davada (k.cp) kopya kanıtı +25 puan */
