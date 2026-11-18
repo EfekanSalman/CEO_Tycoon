@@ -40,9 +40,12 @@ const {open,startScn}=require('../page');const path=require('path');
       // ---- haftalık yönetim ----
       const m=monthlyEst(),sal=G.emps.reduce((a,e)=>a+e.salary,0),fix=sal+officeRent();
       // araştırma: önkoşulu hazır en ucuz araştırma (oyunun otomatik araştırma kuralı), kategori açanlar önce
-      // pat: sattığın kategorileri koruyan patentlenebilir araştırmalar önce (rakip davası patent farkı ≥2 olunca gelir; tek patent farkı kapatır)
-      const mineCats=new Set(myActive().map(p=>p.cat)),patWant=ST.patpri?RES.filter(x=>!has(x.id)&&(PAT_CAT[x.id]||[]).some(c=>mineCats.has(c))&&(x.pre||[]).every(has)).map(x=>x.id):[];
-      if(!G.res.active){const want=new Set([...patWant,...Object.values(CAT_RES),...(SID==='chip'?resClosure(['n14','fab']):[])]);const L=RES.filter(x=>!has(x.id)&&(x.pre||[]).every(has)).sort((a,b)=>(want.has(b.id)?1:0)-(want.has(a.id)?1:0)||resCostOf(a)-resCostOf(b));
+      // pat: tehdit altındaki kategorileri koruyan patentlenebilir araştırmalar önce
+      // v168: koruyucu araştırma yalnızca tehdit altındaki kategorilerde (rakip, dava eşiğine 1 puan kala) ve senaryonun zorunlu araştırmasından sonra;
+      //   eskiden sattığın her kategorinin patentlenebilir araştırmasını kategori açan araştırmalarla aynı önceliğe koyuyordu ve çipte 14nm/fab gecikiyordu.
+      const gap0=typeof SUIT_GAP==='number'?SUIT_GAP:2,patWant=ST.patpri&&typeof suitRisks==='function'?suitRisks().filter(r=>r.gap>=gap0-1&&r.res&&r.gap-r.pend>=gap0-1).map(r=>r.res):[];
+      if(!G.res.active){const must=new Set([...Object.values(CAT_RES),...(SID==='chip'?resClosure(['n14','fab']):[])]),prot=new Set(patWant),tier=x=>must.has(x.id)?2:prot.has(x.id)?1:0;
+        const L=RES.filter(x=>!has(x.id)&&(x.pre||[]).every(has)).sort((a,b)=>tier(b)-tier(a)||resCostOf(a)-resCostOf(b));
         const rr=L[0];if(rr&&G.cash>resCostOf(rr)*3+fix*2){T('research',{rid:rr.id});if(G.res.active)NS.res++;}}
       // patent başvurusu (pat): yapılmış ve patentlenebilir araştırmalar
       if(ST.pat)for(const rr of RES){if(!has(rr.id)||!PAT_CAT[rr.id]||G.patFiled[rr.id]||(G.dev&&G.dev.oss.some(o=>o.rid===rr.id)))continue;if(G.cash<(typeof patFee==='function'?patFee():60000*infl())*2+fix)break;const n0=Object.keys(G.patFiled).length;T('patfile',{rid:rr.id});if(Object.keys(G.patFiled).length>n0)NS.patFiled++;}

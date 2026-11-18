@@ -1,6 +1,6 @@
 // Rakip patent davası dengesi (v166): ilk 18 ay dava yok, patent farkı en az 3, talep nakdin en çok %20'si (en az 150K);
 // her patent gücü dava ihtimalini %15 düşürür (en çok %80); tahmin patent gücüne göre değişir (patentsizken uzlaşma, güçlü patentle savunma önerilir).
-const {open,startScn}=require('../tools/page');
+const {open,startScn}=require('../tools/page');const SUIT_GAP_T=3;
 (async()=>{let fail=0;const ok=(c,m)=>{if(!c){fail++;console.log('FAIL',m);}};const {b,pg,errs}=await open({seed:7});
   await startScn(pg,'garage');
   const r=await pg.evaluate(()=>{for(let i=0;i<800;i++){step();G.pending=null;}
@@ -18,6 +18,10 @@ const {open,startScn}=require('../tools/page');
   // başvuru ücreti (v167): en çok 25 çalışanda 15K, üstünde 30K (bugünkü fiyatlarla)
   const fee=await pg.evaluate(()=>{const I=infl(),small=patFee()/I;const e0=G.emps;G.emps=[...e0];while(workers().length<=PAT_SMALL)G.emps.push({...e0.find(e=>!e.founder&&!e.intern)||{id:-1},id:nid(),founder:false,intern:false});const big=patFee()/I;G.emps=e0;return [Math.round(small),Math.round(big)];});
   console.log('başvuru ücreti küçük/büyük:',fee);ok(fee[0]===15000&&fee[1]===30000,'patent fee');
+  // dava riski (v168): rakip önde olunca suitRisks kategoriyi, farkı ve gereken patent gücünü verir; patent panelinde satır çıkar
+  const rk=await pg.evaluate(()=>{const c=liveComps()[0],cat=c.focus[0];for(const x of liveComps()){initPats(x);x.pats[cat]=x===c?6:0;x.aggr=0.9;x.rel=0;}G.cases=[];G.cross={};G.pats=[];
+    const R=suitRisks().find(r=>r.cat===cat);UI.tab='res';(UI.sub=UI.sub||{}).res='patent';render();const t=[...document.querySelectorAll('.small')].some(e=>/Dava riski|Lawsuit risk/.test(e.textContent));return {R,t};});
+  console.log('dava riski:',JSON.stringify(rk));ok(rk.R&&rk.R.gap===6&&rk.R.need===6-SUIT_GAP_T+1&&rk.t,'suit risk');
   console.log('dava kuralları:',JSON.stringify(r));
   ok(!r.early&&!r.gap2&&r.gap3&&r.claimCap&&r.floor&&Math.abs(r.det4-0.6)<1e-9&&r.det9===0.8,'suit rules');
   console.log('ERRS',errs.length,JSON.stringify(errs.slice(0,3)));if(fail||errs.length)process.exitCode=1;await b.close();})();

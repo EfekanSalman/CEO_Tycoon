@@ -23,6 +23,15 @@ const SUIT_DETER=0.15,suitDeter=cat=>Math.min(0.8,SUIT_DETER*myPat(cat));
 /* rakibin talebi: aylık kategori cirosunun 2–4 katı, ama nakdinin en çok %20'si (en az 150K) */
 const suitClaim=cat=>Math.round(Math.min(Math.max(200000*infl(),catRev('P',cat)*rnd(2,4)),Math.max(150000*infl(),Math.max(0,G.cash)*SUIT_CAP)));
 function initPats(c){if(c.pats)return;c.pats={};for(const f of c.focus)c.pats[f]=Math.round(c.emp/180*c.tech);}
+/* dava riski (v168): sattığın (payı ≥%5) her kategoride sana dava açabilecek en önde rakip; gap = onların patent gücü − seninki (bekleyen başvurular sayılmaz).
+   need: dava eşiğinin altına inmek için gereken patent gücü; res: o kategoriyi koruyan, önkoşulu hazır en ucuz araştırma. Patent panelinde ve botta kullanılır. */
+function suitRisks(){const out=[];
+  for(const cat of new Set(myActive().map(p=>p.cat))){if(myActive(cat).reduce((a,p)=>a+p.share,0)<0.05)continue;let w=null;
+    for(const c of liveComps()){if(c.aggr<0.35||crossWith(c.id)||relOf(c)>=30||!c.focus.includes(cat))continue;initPats(c);const g=theirPat(c,cat)-myPat(cat);if(!w||g>w.gap)w={c,gap:g};}
+    if(!w)continue;const pend=(G.patPend||[]).filter(x=>x.cats.includes(cat)).reduce((a,x)=>a+x.w,0);
+    const res=RES.filter(r=>!has(r.id)&&(PAT_CAT[r.id]||[]).includes(cat)&&(r.pre||[]).every(has)).sort((a,b)=>resCostOf(a)-resCostOf(b))[0]||null;
+    out.push({cat,cid:w.c.id,name:w.c.name,gap:w.gap,need:Math.max(0,w.gap-SUIT_GAP+1),pend,res:res&&res.id});}
+  return out.sort((a,b)=>b.gap-a.gap);}
 function filePatent(id,n,cats,w,free){
   G.patPend.push({id:nid(),src:id,n,cats,w,due:G.day+rint(120,240),ch:free?0.9:0.8});if(id)G.patFiled[id]=true;
 }
@@ -96,6 +105,10 @@ function vPatents(){
       <div class="row" style="gap:4px;flex-wrap:nowrap"><div class="bar" style="flex:1"><i style="width:${m/mx*100}%;background:var(--accent)"></i></div><div class="bar" style="flex:1"><i style="width:${t/mx*100}%;background:${top?ownerColor(top.id):'var(--line)'}"></i></div></div></div>`:`<div class="col" style="gap:4px"><div class="row between small"><b>${CATS[cat].n}</b><span class="muted">sen ${m} · ${top?esc(top.name.split(' ')[0])+' '+t:'rakip yok'}</span></div>
       <div class="row" style="gap:4px;flex-wrap:nowrap"><div class="bar" style="flex:1"><i style="width:${m/mx*100}%;background:var(--accent)"></i></div><div class="bar" style="flex:1"><i style="width:${t/mx*100}%;background:${top?ownerColor(top.id):'var(--line)'}"></i></div></div></div>`);}).join('');
   const can=RES.filter(r=>PAT_CAT[r.id]&&has(r.id)&&!G.patFiled[r.id]);
+  const risks=suitRisks().filter(r=>r.gap>=SUIT_GAP-1);
+  const riskHtml=risks.length?`<div class="small"><b>${LANG_EN?"Lawsuit risk":'Dava riski'}:</b> ${risks.slice(0,4).map(r=>{const rr=r.res&&RESD[r.res];
+    return LANG_EN?`${CATS[r.cat].n}: ${esc(r.name)} is ${r.gap} ahead (suits start at ${SUIT_GAP}) · ${r.need?`${r.need} more patent strength needed${r.pend?`, ${r.pend} pending`:''}`:'just below the line'}${rr?` · protective research: ${esc(rr.n)} (${money(resCostOf(rr))})`:''}`
+      :`${CATS[r.cat].n}: ${esc(r.name)} ${r.gap} önde (dava ${SUIT_GAP} farkta başlar) · ${r.need?`${r.need} patent gücü daha gerek${r.pend?`, ${r.pend} bekliyor`:''}`:'sınırın hemen altındasın'}${rr?` · koruyucu araştırma: ${esc(rr.n)} (${money(resCostOf(rr))})`:''}`;}).join(' · ')}</div>`:'';
   const fileCost=patFee();
   const owned=(G.pats||[]).filter(p=>p.exp>G.day).sort((a,b)=>b.grant-a.grant);
   const cases=G.cases.map(k=>{const c=comp(k.cid);if(!c)return '';const pl=k.role==='pl',ch=pl?plainChance(k.cat,c,k.firm):1-defLose(k.cat,c,k.firm);
@@ -122,8 +135,9 @@ function vPatents(){
         :`<div class="small neg">${!c?'':crossWith(c.id)?'Bu şirketle çapraz lisans anlaşman var.':G.cases.some(k=>k.cid===c.id)?'Bu şirketle zaten süren bir davan var.':!su.cat?'Bu şirketin piyasada ürünü yok.':'Bu alanda hiç patentin yok.'}</div>`}</div>`);}
   return (LANG_EN?`<section class="panel"><div class="ph"><h2>Patents</h2><span class="sub">${owned.reduce((a,p)=>a+p.w,0)} patent strength · ${G.patPend.length} applications pending</span></div><div class="pb col">
     <div class="grid3">${strength}</div>
+    ${riskHtml}
     <p class="small muted">Completed research can be patented; products with a press score of 8 or higher automatically file for a design patent. If your patent portfolio in an area is stronger than a rival's, you can sue to win damages and sales restrictions. If you're weak, aggressive rivals will sue you.</p>
-    ${can.length?`<div class="row" style="gap:6px">${can.map(r=>`<button class="btn sm" data-act="patfile" data-rid="${r.id}" ${G.cash<fileCost?'disabled':''} title="${PAT_CAT[r.id].map(c=>CATS[c].n).join(', ')}">Patentle: ${esc(r.n)} · ${money(fileCost)}</button>`).join('')}</div>`:''}
+    ${can.length?`<div class="row" style="gap:6px">${can.map(r=>`<button class="btn sm" data-act="patfile" data-rid="${r.id}" ${G.cash<fileCost?'disabled':''} title="${PAT_CAT[r.id].map(c=>CATS[c].n).join(', ')}">Patent: ${esc(r.n)} · ${money(fileCost)}</button>`).join('')}</div>`:''}
     ${G.patPend.length?`<div class="small"><b>Pending applications:</b> ${G.patPend.map(p=>`${esc(p.n)} (${fmtDate(p.due)})`).join(' · ')}</div>`:''}
     ${owned.length?`<div class="small"><b>Your patents:</b> ${owned.slice(0,12).map(p=>`${esc(p.n)}${p.w>1?' ×'+p.w:''}`).join(' · ')}${owned.length>12?` and ${owned.length-12} more`:''}</div>`:''}
   </div></section>
@@ -131,6 +145,7 @@ function vPatents(){
     ${cases?`<div class="tw"><table><thead><tr><th>Other party</th><th>Role</th><th>Firm</th><th class="r">Win</th><th class="r">Verdict</th><th></th></tr></thead><tbody>${cases}</tbody></table></div>`:"<div class=\"small muted\">No active cases.</div>"}
     ${form||`<div class="row"><button class="btn sm primary" data-act="suenew">File suit</button></div>`}</div></section>`:`<section class="panel"><div class="ph"><h2>Patentler</h2><span class="sub">${owned.reduce((a,p)=>a+p.w,0)} patent gücü · ${G.patPend.length} başvuru bekliyor</span></div><div class="pb col">
     <div class="grid3">${strength}</div>
+    ${riskHtml}
     <p class="small muted">Tamamlanan araştırmalar patentlenebilir; basın puanı 8 ve üzeri ürünler otomatik tasarım patenti başvurusu yapar. Bir alanda rakibinden güçlü patent portföyün varsa dava açıp tazminat ve satış kısıtlaması kazanabilirsin. Zayıfsan saldırgan rakipler sana dava açar.</p>
     ${can.length?`<div class="row" style="gap:6px">${can.map(r=>`<button class="btn sm" data-act="patfile" data-rid="${r.id}" ${G.cash<fileCost?'disabled':''} title="${PAT_CAT[r.id].map(c=>CATS[c].n).join(', ')}">Patentle: ${esc(r.n)} · ${money(fileCost)}</button>`).join('')}</div>`:''}
     ${G.patPend.length?`<div class="small"><b>Bekleyen başvurular:</b> ${G.patPend.map(p=>`${esc(p.n)} (${fmtDate(p.due)})`).join(' · ')}</div>`:''}
