@@ -17,6 +17,9 @@ const crossChance=(cat,c)=>clamp(0.1+0.09*myPat(cat)-0.02*theirPat(c,cat)+relOf(
 const dmgEst=(c,cat)=>Math.min(Math.max(0,c.cash)*0.2,catRev(c.id,cat)*2.2);
 /* patent başvuru ücreti (v166): 30K, en çok 25 çalışanlı küçük şirkete yarı fiyat (15K). Eskiden her şirket için 60K'ydı;
    bot ölçümünde başvuru masrafı genç şirketlerde davadan kazanılan korumayı yiyordu. */
+/* araştırma patentinin gücü (v169): 2, büyük araştırmada (4.000+ puan) 3; eskiden 1 ve 2'ydi. Rakipler kategoride 6–15 güçle geldiği için
+   tek araştırma oyuncuyu dava sınırına yaklaştıramıyordu; koruyucu araştırma ölçümde başvurudan öteye bir şey katmıyordu. Tasarım patenti 1 kalır. */
+const patResW=r=>r.rp>=4000?3:2;
 const PAT_FEE=30000,PAT_SMALL=25,patFee=()=>Math.round(PAT_FEE*(workers().length<=PAT_SMALL?0.5:1)*infl());
 const SUIT_GRACE=540,SUIT_GAP=3,SUIT_CAP=0.2;
 const SUIT_DETER=0.15,suitDeter=cat=>Math.min(0.8,SUIT_DETER*myPat(cat));

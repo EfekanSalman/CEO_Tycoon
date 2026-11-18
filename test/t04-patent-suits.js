@@ -22,6 +22,10 @@ const {open,startScn}=require('../tools/page');const SUIT_GAP_T=3;
   const rk=await pg.evaluate(()=>{const c=liveComps()[0],cat=c.focus[0];for(const x of liveComps()){initPats(x);x.pats[cat]=x===c?6:0;x.aggr=0.9;x.rel=0;}G.cases=[];G.cross={};G.pats=[];
     const R=suitRisks().find(r=>r.cat===cat);UI.tab='res';(UI.sub=UI.sub||{}).res='patent';render();const t=[...document.querySelectorAll('.small')].some(e=>/Dava riski|Lawsuit risk/.test(e.textContent));return {R,t};});
   console.log('dava riski:',JSON.stringify(rk));ok(rk.R&&rk.R.gap===6&&rk.R.need===6-SUIT_GAP_T+1&&rk.t,'suit risk');
+  // araştırma patenti gücü (v169): 2, büyük araştırmada (4.000+) 3; başvuru bu gücü kullanır
+  const pw=await pg.evaluate(()=>{const r=RES.find(x=>PAT_CAT[x.id]&&x.rp>=4000),q=RES.find(x=>PAT_CAT[x.id]&&x.rp<4000);G.patPend=[];G.patFiled={};G.cash=1e7;G.res.done[r.id]=G.day;
+    if(!has(r.id))return {err:'has'};act('patfile',{rid:r.id});const pp=G.patPend.find(x=>x.src===r.id);return {big:patResW(r),small:patResW(q),filed:pp&&pp.w};});
+  console.log('patent gücü:',JSON.stringify(pw));ok(pw.big===3&&pw.small===2&&pw.filed===3,'patent weight');
   console.log('dava kuralları:',JSON.stringify(r));
   ok(!r.early&&!r.gap2&&r.gap3&&r.claimCap&&r.floor&&Math.abs(r.det4-0.6)<1e-9&&r.det9===0.8,'suit rules');
   console.log('ERRS',errs.length,JSON.stringify(errs.slice(0,3)));if(fail||errs.length)process.exitCode=1;await b.close();})();
