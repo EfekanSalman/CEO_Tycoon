@@ -45,7 +45,7 @@ const {open,startScn}=require('../page');const path=require('path');
       if(!G.res.active){const want=new Set([...patWant,...Object.values(CAT_RES),...(SID==='chip'?resClosure(['n14','fab']):[])]);const L=RES.filter(x=>!has(x.id)&&(x.pre||[]).every(has)).sort((a,b)=>(want.has(b.id)?1:0)-(want.has(a.id)?1:0)||resCostOf(a)-resCostOf(b));
         const rr=L[0];if(rr&&G.cash>resCostOf(rr)*3+fix*2){T('research',{rid:rr.id});if(G.res.active)NS.res++;}}
       // patent başvurusu (pat): yapılmış ve patentlenebilir araştırmalar
-      if(ST.pat)for(const rr of RES){if(!has(rr.id)||!PAT_CAT[rr.id]||G.patFiled[rr.id]||(G.dev&&G.dev.oss.some(o=>o.rid===rr.id)))continue;if(G.cash<60000*infl()*2+fix)break;const n0=Object.keys(G.patFiled).length;T('patfile',{rid:rr.id});if(Object.keys(G.patFiled).length>n0)NS.patFiled++;}
+      if(ST.pat)for(const rr of RES){if(!has(rr.id)||!PAT_CAT[rr.id]||G.patFiled[rr.id]||(G.dev&&G.dev.oss.some(o=>o.rid===rr.id)))continue;if(G.cash<(typeof patFee==='function'?patFee():60000*infl())*2+fix)break;const n0=Object.keys(G.patFiled).length;T('patfile',{rid:rr.id});if(Object.keys(G.patFiled).length>n0)NS.patFiled++;}
       // rakibe patent davası (sue): kazanma ihtimali ≥ %50 ve beklenen tazminat altı aylık avukatlık masrafının 3 katından fazlaysa
       if(ST.sue&&!G.cases.some(k=>k.role==='pl')){let best=null;for(const c of liveComps()){if(crossWith(c.id)||G.cases.some(k=>k.cid===c.id))continue;initPats(c);
           for(const cat of c.focus){if(myPat(cat)<=0)continue;const p=plainChance(cat,c,'std'),dmg=dmgEst(c,cat),fee=LAW.std.cost*infl()*6;if(p<0.5||p*dmg<fee*3)continue;const ev=p*dmg-fee;if(!best||ev>best.ev)best={c,cat,ev};}}

@@ -15,6 +15,9 @@ const DEF_BASE=0.45,DEF_BRAND=1;
 const defLose=(cat,c,firm)=>clamp(DEF_BASE+0.05*theirPat(c,cat)-0.07*myPat(cat)-LAW[firm].b,0.1,0.9);
 const crossChance=(cat,c)=>clamp(0.1+0.09*myPat(cat)-0.02*theirPat(c,cat)+relOf(c)/200,0.03,0.85);
 const dmgEst=(c,cat)=>Math.min(Math.max(0,c.cash)*0.2,catRev(c.id,cat)*2.2);
+/* patent başvuru ücreti (v166): 30K, en çok 25 çalışanlı küçük şirkete yarı fiyat (15K). Eskiden her şirket için 60K'ydı;
+   bot ölçümünde başvuru masrafı genç şirketlerde davadan kazanılan korumayı yiyordu. */
+const PAT_FEE=30000,PAT_SMALL=25,patFee=()=>Math.round(PAT_FEE*(workers().length<=PAT_SMALL?0.5:1)*infl());
 const SUIT_GRACE=540,SUIT_GAP=3,SUIT_CAP=0.2;
 const SUIT_DETER=0.15,suitDeter=cat=>Math.min(0.8,SUIT_DETER*myPat(cat));
 /* rakibin talebi: aylık kategori cirosunun 2–4 katı, ama nakdinin en çok %20'si (en az 150K) */
@@ -93,7 +96,7 @@ function vPatents(){
       <div class="row" style="gap:4px;flex-wrap:nowrap"><div class="bar" style="flex:1"><i style="width:${m/mx*100}%;background:var(--accent)"></i></div><div class="bar" style="flex:1"><i style="width:${t/mx*100}%;background:${top?ownerColor(top.id):'var(--line)'}"></i></div></div></div>`:`<div class="col" style="gap:4px"><div class="row between small"><b>${CATS[cat].n}</b><span class="muted">sen ${m} · ${top?esc(top.name.split(' ')[0])+' '+t:'rakip yok'}</span></div>
       <div class="row" style="gap:4px;flex-wrap:nowrap"><div class="bar" style="flex:1"><i style="width:${m/mx*100}%;background:var(--accent)"></i></div><div class="bar" style="flex:1"><i style="width:${t/mx*100}%;background:${top?ownerColor(top.id):'var(--line)'}"></i></div></div></div>`);}).join('');
   const can=RES.filter(r=>PAT_CAT[r.id]&&has(r.id)&&!G.patFiled[r.id]);
-  const fileCost=60000*infl();
+  const fileCost=patFee();
   const owned=(G.pats||[]).filter(p=>p.exp>G.day).sort((a,b)=>b.grant-a.grant);
   const cases=G.cases.map(k=>{const c=comp(k.cid);if(!c)return '';const pl=k.role==='pl',ch=pl?plainChance(k.cat,c,k.firm):1-defLose(k.cat,c,k.firm);
     return (LANG_EN?`<tr><td><b>${esc(c.name)}</b><div class="small muted">${CATS[k.cat].n}</div></td><td><span class="chip ${pl?'st-ok':'st-bad'}">${pl?"Plaintiff":"Defendant"}</span></td><td class="small">${LAW[k.firm].n}<div class="muted">${money(LAW[k.firm].cost*infl())}/mo</div></td>
