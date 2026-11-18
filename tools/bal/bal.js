@@ -1,6 +1,7 @@
 // Denge botu (v166, kurtarmadan sonra yeniden yazıldı): node tools/bal/bal.js <senaryo> <strateji> <yıl> [html] [tohum]
 // Ortam: OFF="rtd,rcd,..." sistemleri kapatır (window.SG_OFF), NOCRN=1 ortak rastgele sayıları kapatır.
 // Strateji bayrakları (virgülle): base (her zaman), pat (patent başvurusu), suitscan (sana açılan patent davasında seçenekleri kopyada ölç),
+//   patf (yalnızca yapılmış araştırmalara başvuru; araştırma sırasına dokunmaz), sue (rakibe patent davası),
 //   optxall (bütün kararlarda seçenekleri kopyada ölç, türden koşu başına en çok 6).
 // Çıktı: tek satır JSON {scnRes,val,cash,over,ns:{...}}.
 // Bot oyunun kararlarında oyunun kendi varsayılanını (evDefI: tahmin varsa en iyi tahmin, yoksa ayarlı varsayılan) seçer.
@@ -11,7 +12,8 @@ const {open,startScn}=require('../page');const path=require('path');
     let t=(SEED*7919)>>>0;Math.random=function(){t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return ((r^r>>>14)>>>0)/4294967296;};
     window.SG_OFF={};for(const k of (OFF||'').split(',').filter(Boolean))window.SG_OFF[k]=1;window.SG_CRN=CRN?SEED:null;
     UI.tutPref=false;PREF.decide='all';PREF.tipsOff=true;closeModal();act('scnstart',{s:SID});closeModal();if(G.tut)G.tut.on=false;G.speed=0;UI.quiet=true;
-    const ST={pat:/pat/.test(STRAT),sue:/sue/.test(STRAT),suitscan:/suitscan/.test(STRAT),optxall:/optxall/.test(STRAT)};
+    const TRACE=/trace/.test(STRAT);
+    const ST={pat:/pat/.test(STRAT),patpri:/pat($|,)/.test(STRAT),sue:/sue/.test(STRAT),suitscan:/suitscan/.test(STRAT),optxall:/optxall/.test(STRAT)};
     const T=(a,ds)=>{try{act(a,ds||{});}catch(e){}};
     const NS={hire:0,proj:0,res:0,rack:0,office:0,round:0,loan:0,reg:0,camp:0,exec:0,patFiled:0,ev:{},suitIn:0,suitOut:0,suitWon:0,suitLost:0,yr:[]};
     const ROLEW={soft:0.32,design:0.18,hw:0.14,res:0.1,mkt:0.1,sup:0.07,ops:0.06,sec:0.03};
@@ -24,7 +26,7 @@ const {open,startScn}=require('../page');const path=require('path');
     const burn=()=>{const m=monthlyEst();return Math.max(1,(m.rev||0)-(m.profit||0));};
     const nextRound=()=>ROUNDS.find((r,i)=>!G.rounds[r.id]&&(i===0||G.rounds[ROUNDS[i-1].id]));
     for(let d=1;d<365*YRS;d++){step();
-      if(G.pending){const id=G.pending.id,E=EVD[id];NS.ev[id]=(NS.ev[id]||0)+1;if(id==='suitIn')NS.suitIn++;
+      if(G.pending){const id=G.pending.id,E=EVD[id];NS.ev[id]=(NS.ev[id]||0)+1;if(id==='suitIn'){NS.suitIn++;if(TRACE){const P=G.pending.d,c=comp(P.cid);(NS.st=NS.st||[]).push({d:G.day,cat:P.cat,claim:Math.round(P.claim/1e3),cash:Math.round(G.cash/1e3),rev:Math.round(monthlyEst().rev/1e3),catRev:Math.round(catRev('P',P.cat)/1e3),pat:[myPat(P.cat),theirPat(c,P.cat)]});}}
         try{const v=E.view(G.pending.d),n=v.o.length;
           if((ST.suitscan&&id==='suitIn')||(ST.optxall&&id!=='htoatk'&&(OXN[id]=(OXN[id]||0)+1)<=6)){let est=null;try{est=optEst(id,G.pending.d);}catch(e){}
             const c=ibCfg(id),ref=evDefI(id,G.pending.d,n);OX.push({id,day:G.day,est:est&&est.map(x=>Math.round(x)),res:evalOpts(365),ref,names:v.o.map(o=>String(o.t).replace(/[\d.,]+[KMB]?/g,'#').slice(0,48)),pat:id==='suitIn'?[myPat(G.pending.d.cat),theirPat(comp(G.pending.d.cid),G.pending.d.cat)]:null});}
@@ -38,10 +40,12 @@ const {open,startScn}=require('../page');const path=require('path');
       // ---- haftalık yönetim ----
       const m=monthlyEst(),sal=G.emps.reduce((a,e)=>a+e.salary,0),fix=sal+officeRent();
       // araştırma: önkoşulu hazır en ucuz araştırma (oyunun otomatik araştırma kuralı), kategori açanlar önce
-      if(!G.res.active){const want=new Set([...Object.values(CAT_RES),...(SID==='chip'?resClosure(['n14','fab']):[])]);const L=RES.filter(x=>!has(x.id)&&(x.pre||[]).every(has)).sort((a,b)=>(want.has(b.id)?1:0)-(want.has(a.id)?1:0)||resCostOf(a)-resCostOf(b));
+      // pat: sattığın kategorileri koruyan patentlenebilir araştırmalar önce (rakip davası patent farkı ≥2 olunca gelir; tek patent farkı kapatır)
+      const mineCats=new Set(myActive().map(p=>p.cat)),patWant=ST.patpri?RES.filter(x=>!has(x.id)&&(PAT_CAT[x.id]||[]).some(c=>mineCats.has(c))&&(x.pre||[]).every(has)).map(x=>x.id):[];
+      if(!G.res.active){const want=new Set([...patWant,...Object.values(CAT_RES),...(SID==='chip'?resClosure(['n14','fab']):[])]);const L=RES.filter(x=>!has(x.id)&&(x.pre||[]).every(has)).sort((a,b)=>(want.has(b.id)?1:0)-(want.has(a.id)?1:0)||resCostOf(a)-resCostOf(b));
         const rr=L[0];if(rr&&G.cash>resCostOf(rr)*3+fix*2){T('research',{rid:rr.id});if(G.res.active)NS.res++;}}
       // patent başvurusu (pat): yapılmış ve patentlenebilir araştırmalar
-      if(ST.pat)for(const rr of RES){if(!has(rr.id)||!PAT_CAT[rr.id]||G.patFiled[rr.id]||(G.dev&&G.dev.oss.some(o=>o.rid===rr.id)))continue;if(G.cash<60000*infl()*5+fix*2)break;const n0=Object.keys(G.patFiled).length;T('patfile',{rid:rr.id});if(Object.keys(G.patFiled).length>n0)NS.patFiled++;}
+      if(ST.pat)for(const rr of RES){if(!has(rr.id)||!PAT_CAT[rr.id]||G.patFiled[rr.id]||(G.dev&&G.dev.oss.some(o=>o.rid===rr.id)))continue;if(G.cash<60000*infl()*2+fix)break;const n0=Object.keys(G.patFiled).length;T('patfile',{rid:rr.id});if(Object.keys(G.patFiled).length>n0)NS.patFiled++;}
       // rakibe patent davası (sue): kazanma ihtimali ≥ %50 ve beklenen tazminat altı aylık avukatlık masrafının 3 katından fazlaysa
       if(ST.sue&&!G.cases.some(k=>k.role==='pl')){let best=null;for(const c of liveComps()){if(crossWith(c.id)||G.cases.some(k=>k.cid===c.id))continue;initPats(c);
           for(const cat of c.focus){if(myPat(cat)<=0)continue;const p=plainChance(cat,c,'std'),dmg=dmgEst(c,cat),fee=LAW.std.cost*infl()*6;if(p<0.5||p*dmg<fee*3)continue;const ev=p*dmg-fee;if(!best||ev>best.ev)best={c,cat,ev};}}
@@ -49,7 +53,8 @@ const {open,startScn}=require('../page');const path=require('path');
       // ofis: dolmak üzereyse ve nakit varsa taşın
       if(G.emps.length>=officeCap()-1&&OFFICES[G.office+1]&&G.cash>OFFICES[G.office+1].cost*infl()*3+fix*3){T('office');NS.office++;}
       // işe alım: nakit 8 aylık sabit giderden fazlaysa haftada bir, oran hedefine göre en eksik rol
-      if(G.emps.length<officeCap()&&G.cash>fix*8+30000*infl()){const cnt={};for(const e of G.emps)cnt[e.role]=(cnt[e.role]||0)+1;const n=G.emps.length+1;
+      const loss=Math.max(0,-(m.profit||0));
+      if(G.emps.length<officeCap()&&G.cash>fix*8+30000*infl()&&(loss===0||G.cash>loss*18)){const cnt={};for(const e of G.emps)cnt[e.role]=(cnt[e.role]||0)+1;const n=G.emps.length+1;
         const need=Object.keys(ROLEW).map(r=>[r,ROLEW[r]*n-(cnt[r]||0)]).sort((a,b)=>b[1]-a[1]);
         let hired=false;for(const [role] of need){const c=(G.cands||[]).filter(x=>x.role===role&&!x.intern).sort((a,b)=>b.skill/b.salary-a.skill/a.salary)[0];if(c){T('hire',{id:String(c.id)});hired=true;NS.hire++;break;}}
         if(!hired&&G.cash>fix*12)T('refresh');}
@@ -75,6 +80,9 @@ const {open,startScn}=require('../page');const path=require('path');
       // finansman: nakit 4 aylık giderin altındaysa yatırım turu, olmazsa kredi
       if(G.cash<burn()*4){const rd=nextRound();if(rd&&valuation()>=rd.min){const c0=G.cash;T('round',{rid:rd.id});if(G.cash>c0)NS.round++;}
         if(G.cash<burn()*2){const lim=loanLimit()-G.debt;if(lim>50000){T('loan',{amt:String(Math.round(Math.min(lim,burn()*6)))});NS.loan++;}}}
+      // acil tasarruf: nakit 2 aylık giderin altındaysa ve zarar ediliyorsa, haftada en çok 2 kişi (projede olmayan, en düşük yetenek/maaş)
+      if(G.cash<burn()*2&&(m.profit||0)<0){const L=G.emps.filter(e=>!e.founder&&!e.cof).sort((a,b)=>(a.proj?1:0)-(b.proj?1:0)||a.skill/a.salary-b.skill/b.salary);for(const e of L.slice(0,2)){T('fire',{id:String(e.id)});NS.fire=(NS.fire||0)+1;}}
+      if(TRACE&&d%28===0){const h=G.hist[G.hist.length-1]||{};const mm=h.m||{};NS.tr=NS.tr||[];NS.tr.push([G.day,Math.round(G.cash/1e3),Math.round((h.profit||0)/1e3),Math.round((mm.rev||0)/1e3),Math.round((mm.salary||0)/1e3),Math.round((mm.other||0)/1e3),Math.round((mm.capex||0)/1e3),Math.round((mm.supply||0)/1e3),G.emps.length,myActive().length,G.projects.length,Math.round(G.debt/1e3)]);}
       if(d%365<7)NS.yr.push({y:Math.round(G.day/365),v:Math.round(valuation()/1e6),cash:Math.round(G.cash/1e6),emps:G.emps.length,prods:myActive().length});
     }
     NS.pats=(G.pats||[]).length;NS.patPend=(G.patPend||[]).length;NS.optx=OX.length?OX:null;
