@@ -964,3 +964,47 @@ body.bd-dragging{cursor:grabbing;user-select:none}
 .dpc-m{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;margin-top:3px}
 .dpc-r{flex:none}
 @media (max-width:900px){.dhero{grid-template-columns:1fr}.dh-scene{border-right:0;border-bottom:1px solid var(--line)}.dh-of canvas{max-height:300px}}
+/* ---- kilometre taşları (v175) ---- */
+.mscard{position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:58;pointer-events:auto;cursor:pointer;animation:msIn .45s cubic-bezier(.2,1.4,.4,1)}
+.mscard.out{opacity:0;transform:translateX(-50%) translateY(-12px);transition:opacity .3s,transform .3s}
+.ms-in{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-width:260px;max-width:min(420px,calc(100vw - 32px));padding:18px 22px 16px;background:var(--panel);border:2px solid var(--accent);border-radius:16px;box-shadow:0 18px 50px rgba(5,12,25,.28)}
+.mscard.big .ms-in{border-color:var(--ok);background:linear-gradient(180deg,color-mix(in srgb,var(--ok) 12%,var(--panel)),var(--panel))}
+.ms-ic{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);margin-bottom:4px;animation:msPop .6s .1s both}
+.mscard.big .ms-ic{background:var(--ok);color:#fff}
+.ms-ic svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ms-t{font-family:var(--f-display);font-weight:800;font-size:20px;line-height:1.2}
+.ms-s{font-size:13px;color:var(--muted)}
+.fx-cf{position:fixed;inset:0;z-index:57;pointer-events:none}
+@keyframes msIn{from{opacity:0;transform:translateX(-50%) translateY(16px) scale(.9)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+@keyframes msPop{0%{transform:scale(.3) rotate(-20deg)}70%{transform:scale(1.15) rotate(6deg)}100%{transform:scale(1) rotate(0)}}
+.pulse{animation:kpiPulse .7s ease-out}.pulse-neg{animation:kpiPulseNeg .7s ease-out}
+@keyframes kpiPulse{0%{transform:scale(1)}30%{transform:scale(1.06);color:var(--ok)}100%{transform:scale(1)}}
+@keyframes kpiPulseNeg{0%{transform:scale(1)}30%{transform:scale(1.04);color:var(--bad)}100%{transform:scale(1)}}
+.dpc.pulse{animation:cardPulse .7s ease-out}
+@keyframes cardPulse{30%{box-shadow:0 0 0 3px color-mix(in srgb,var(--cc) 35%,transparent)}}
+.dh-kpis .dkpi b{display:inline-block;transform-origin:left center}
+@media (prefers-reduced-motion:reduce){.mscard,.ms-ic,.pulse,.pulse-neg,.dpc.pulse{animation:none}}
+/* ---- ürün kartları (v175): aynı tablo, kart düzeninde; Tablo düğmesiyle eski görünüm ---- */
+.seg.pview{display:inline-flex;gap:4px;margin-left:auto;margin-right:10px}
+.ptab .pc-ic,.ptab .pc-ring{display:none}
+.ptab.pcards,.ptab.pcards tbody{display:block}
+.ptab.pcards thead{display:none}
+.ptab.pcards tbody{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;padding:12px}
+.ptab.pcards tr{display:grid;grid-template-columns:1fr 1fr auto;grid-template-areas:"name name ring" "price sales profit" "qual stock profit" "acts acts acts";gap:10px 14px;padding:14px;border:1px solid var(--line);border-top:5px solid var(--cc);border-radius:12px;background:var(--panel);box-shadow:0 1px 0 var(--line);transition:transform .15s,box-shadow .15s}
+.ptab.pcards tr:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(5,12,25,.10)}
+.ptab.pcards tr.dim{opacity:.6}
+.ptab.pcards td{display:block;padding:0;border:0;text-align:left;min-width:0}
+.ptab.pcards td[data-l]::before{content:attr(data-l);display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;font-family:var(--f-body)}
+.ptab.pcards .pc-name{grid-area:name}.ptab.pcards .pc-fresh{grid-area:ring;align-self:start;text-align:center}
+.ptab.pcards .pc-price{grid-area:price}.ptab.pcards .pc-sales{grid-area:sales}.ptab.pcards .pc-qual{grid-area:qual}.ptab.pcards .pc-stock{grid-area:stock}
+.ptab.pcards .pc-profit{grid-area:profit;text-align:right;font-size:18px;font-family:var(--f-display);font-weight:800;align-self:start}
+.ptab.pcards .pc-profit::before{text-align:right}
+.ptab.pcards .pc-acts{grid-area:acts;border-top:1px solid var(--line);padding-top:10px}
+.ptab.pcards .pc-acts .acts{display:flex;flex-direction:row;flex-wrap:wrap;gap:6px;min-width:0}.ptab.pcards .pc-acts .acts>*{flex:1 1 auto}
+.ptab.pcards .pc-ic{display:grid;float:left;width:44px;height:44px;margin:0 10px 4px 0;border-radius:11px;place-items:center;color:var(--cc);background:color-mix(in srgb,var(--cc) 14%,transparent)}
+.ptab.pcards .pc-ic svg{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:1.7}
+.ptab.pcards .pc-name .linkb b{font-size:16px;font-family:var(--f-display)}
+.ptab.pcards .pc-fresh .skill{display:none}.ptab.pcards .pc-fresh .pc-ring{display:block}
+.ptab.pcards .pc-fresh::before{text-align:center}
+.ptab.pcards .tr-sp svg{width:100%;max-width:150px}
+@media (max-width:520px){.ptab.pcards tbody{grid-template-columns:1fr;padding:8px}.ptab.pcards tr{grid-template-columns:1fr 1fr auto}}

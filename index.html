@@ -971,6 +971,50 @@ body.bd-dragging{cursor:grabbing;user-select:none}
 .dpc-m{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;margin-top:3px}
 .dpc-r{flex:none}
 @media (max-width:900px){.dhero{grid-template-columns:1fr}.dh-scene{border-right:0;border-bottom:1px solid var(--line)}.dh-of canvas{max-height:300px}}
+/* ---- kilometre taşları (v175) ---- */
+.mscard{position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:58;pointer-events:auto;cursor:pointer;animation:msIn .45s cubic-bezier(.2,1.4,.4,1)}
+.mscard.out{opacity:0;transform:translateX(-50%) translateY(-12px);transition:opacity .3s,transform .3s}
+.ms-in{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-width:260px;max-width:min(420px,calc(100vw - 32px));padding:18px 22px 16px;background:var(--panel);border:2px solid var(--accent);border-radius:16px;box-shadow:0 18px 50px rgba(5,12,25,.28)}
+.mscard.big .ms-in{border-color:var(--ok);background:linear-gradient(180deg,color-mix(in srgb,var(--ok) 12%,var(--panel)),var(--panel))}
+.ms-ic{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);margin-bottom:4px;animation:msPop .6s .1s both}
+.mscard.big .ms-ic{background:var(--ok);color:#fff}
+.ms-ic svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ms-t{font-family:var(--f-display);font-weight:800;font-size:20px;line-height:1.2}
+.ms-s{font-size:13px;color:var(--muted)}
+.fx-cf{position:fixed;inset:0;z-index:57;pointer-events:none}
+@keyframes msIn{from{opacity:0;transform:translateX(-50%) translateY(16px) scale(.9)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+@keyframes msPop{0%{transform:scale(.3) rotate(-20deg)}70%{transform:scale(1.15) rotate(6deg)}100%{transform:scale(1) rotate(0)}}
+.pulse{animation:kpiPulse .7s ease-out}.pulse-neg{animation:kpiPulseNeg .7s ease-out}
+@keyframes kpiPulse{0%{transform:scale(1)}30%{transform:scale(1.06);color:var(--ok)}100%{transform:scale(1)}}
+@keyframes kpiPulseNeg{0%{transform:scale(1)}30%{transform:scale(1.04);color:var(--bad)}100%{transform:scale(1)}}
+.dpc.pulse{animation:cardPulse .7s ease-out}
+@keyframes cardPulse{30%{box-shadow:0 0 0 3px color-mix(in srgb,var(--cc) 35%,transparent)}}
+.dh-kpis .dkpi b{display:inline-block;transform-origin:left center}
+@media (prefers-reduced-motion:reduce){.mscard,.ms-ic,.pulse,.pulse-neg,.dpc.pulse{animation:none}}
+/* ---- ürün kartları (v175): aynı tablo, kart düzeninde; Tablo düğmesiyle eski görünüm ---- */
+.seg.pview{display:inline-flex;gap:4px;margin-left:auto;margin-right:10px}
+.ptab .pc-ic,.ptab .pc-ring{display:none}
+.ptab.pcards,.ptab.pcards tbody{display:block}
+.ptab.pcards thead{display:none}
+.ptab.pcards tbody{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;padding:12px}
+.ptab.pcards tr{display:grid;grid-template-columns:1fr 1fr auto;grid-template-areas:"name name ring" "price sales profit" "qual stock profit" "acts acts acts";gap:10px 14px;padding:14px;border:1px solid var(--line);border-top:5px solid var(--cc);border-radius:12px;background:var(--panel);box-shadow:0 1px 0 var(--line);transition:transform .15s,box-shadow .15s}
+.ptab.pcards tr:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(5,12,25,.10)}
+.ptab.pcards tr.dim{opacity:.6}
+.ptab.pcards td{display:block;padding:0;border:0;text-align:left;min-width:0}
+.ptab.pcards td[data-l]::before{content:attr(data-l);display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;font-family:var(--f-body)}
+.ptab.pcards .pc-name{grid-area:name}.ptab.pcards .pc-fresh{grid-area:ring;align-self:start;text-align:center}
+.ptab.pcards .pc-price{grid-area:price}.ptab.pcards .pc-sales{grid-area:sales}.ptab.pcards .pc-qual{grid-area:qual}.ptab.pcards .pc-stock{grid-area:stock}
+.ptab.pcards .pc-profit{grid-area:profit;text-align:right;font-size:18px;font-family:var(--f-display);font-weight:800;align-self:start}
+.ptab.pcards .pc-profit::before{text-align:right}
+.ptab.pcards .pc-acts{grid-area:acts;border-top:1px solid var(--line);padding-top:10px}
+.ptab.pcards .pc-acts .acts{display:flex;flex-direction:row;flex-wrap:wrap;gap:6px;min-width:0}.ptab.pcards .pc-acts .acts>*{flex:1 1 auto}
+.ptab.pcards .pc-ic{display:grid;float:left;width:44px;height:44px;margin:0 10px 4px 0;border-radius:11px;place-items:center;color:var(--cc);background:color-mix(in srgb,var(--cc) 14%,transparent)}
+.ptab.pcards .pc-ic svg{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:1.7}
+.ptab.pcards .pc-name .linkb b{font-size:16px;font-family:var(--f-display)}
+.ptab.pcards .pc-fresh .skill{display:none}.ptab.pcards .pc-fresh .pc-ring{display:block}
+.ptab.pcards .pc-fresh::before{text-align:center}
+.ptab.pcards .tr-sp svg{width:100%;max-width:150px}
+@media (max-width:520px){.ptab.pcards tbody{grid-template-columns:1fr;padding:8px}.ptab.pcards tr{grid-template-columns:1fr 1fr auto}}
 </style>
 
 <header class="top" id="top">
@@ -5648,7 +5692,7 @@ function devPrice(d){if(d.cat==='app')return '';const E=devEst(d);if(E.err)retur
 const feelOn=()=>!PREF.feelOff&&document.visibilityState==='visible'&&G&&G.speed>0;
 function cashDisp(){return UI.cashDisp==null?G.cash:UI.cashDisp;}
 (function cashTick(){if(G){const t=G.cash,c=UI.cashDisp;if(c==null||reduceMotion()||PREF.feelOff||Math.abs(t-c)<Math.max(1,Math.abs(t)*0.002))UI.cashDisp=t;else{UI.cashDisp=c+(t-c)*0.16;const el=document.querySelector('#stats .stat b');if(el)el.textContent=money(UI.cashDisp);}}requestAnimationFrame(cashTick);})();
-function feelMonth(rev,profit){if(!feelOn())return;const s=document.querySelector('#stats .stat');if(!s)return;const r=s.getBoundingClientRect(),el=document.createElement('div');el.className='fly '+(profit>=0?'pos':'neg');
+function feelMonth(rev,profit){try{msCheck();}catch(e){}try{feelPulse(profit);}catch(e){}if(!feelOn())return;const s=document.querySelector('#stats .stat');if(!s)return;const r=s.getBoundingClientRect(),el=document.createElement('div');el.className='fly '+(profit>=0?'pos':'neg');
   el.textContent=`${profit>=0?'+':'−'}${money(Math.abs(profit))}`;el.setAttribute('aria-hidden','true');el.style.left=Math.round(r.left+r.width/2)+'px';el.style.top=Math.round(r.bottom)+'px';document.body.appendChild(el);setTimeout(()=>el.remove(),1900);}
 function launchMoment(p){if(!p||p.owner!=='P')return;OV.cheer=performance.now()+3500;if(!feelOn()||UI.modal)return;const old=document.getElementById('lmom');if(old)old.remove();
   const rv=p.review||0,txt=rv>=8?(LANG_EN?"The press loved it!":'Basın bayıldı!'):rv>=6.5?(LANG_EN?"Well received":'Olumlu karşılandı'):rv>=5?(LANG_EN?"Mixed reactions":'Karışık tepkiler'):(LANG_EN?"The press was harsh":'Basın sert davrandı'),el=document.createElement('div');el.id='lmom';el.className='lmom '+(rv>=6.5?'good':rv>=5?'mid':'bad');el.setAttribute('role','status');
@@ -5658,6 +5702,49 @@ function launchMoment(p){if(!p||p.owner!=='P')return;OV.cheer=performance.now()+
   const cv=el.querySelector('.lm-cf');if(cv){const W=cv.width=window.innerWidth,H=cv.height=window.innerHeight,x=cv.getContext('2d'),cols=['#E2581B','#2B8A3E','#3B5BDB','#F2B705','#C2255C'],P=Array.from({length:70},()=>({x:W/2+(Math.random()-0.5)*80,y:H*0.42,vx:(Math.random()-0.5)*9,vy:-Math.random()*9-3,r:Math.random()*Math.PI,c:cols[Math.floor(Math.random()*5)]}));const t0=performance.now();
     const fr=t=>{if(!cv.isConnected)return;x.clearRect(0,0,W,H);for(const q of P){q.vy+=0.28;q.x+=q.vx;q.y+=q.vy;q.r+=0.2;x.save();x.translate(q.x,q.y);x.rotate(q.r);x.fillStyle=q.c;x.fillRect(-4,-2,8,4);x.restore();}if(t-t0<1800)requestAnimationFrame(fr);else x.clearRect(0,0,W,H);};requestAnimationFrame(fr);}
   setTimeout(()=>{if(el.isConnected){el.classList.add('out');setTimeout(()=>el.remove(),300);}},2800);}
+/* ============================== MİLESTONES (v175) ==============================
+   Oyunun büyük anlarını kutlar: şirket değeri, aylık gelir, ilk kârlı ay, ekip büyüklüğü, yeni ofis, halka arz, ürün sayısı,
+   senaryo hedefleri. Her biri bir kez; ekranın ortasında kart + ses, büyüklerde konfeti. Ay sonunda kontrol edilir (feelMonth).
+   Eski kayıt ilk kez açıldığında zaten ulaşılmış olanlar sessizce işaretlenir. Oyun duraklatılmışken ya da pencere açıkken
+   kart kuyrukta bekler; hareket azaltma ve "oyun hissi kapalı" tercihlerine uyar. */
+const MS_IC={
+  val:'<path d="M3 20h18M6 16l4-5 3 3 5-7"/><path d="M15 7h3v3"/>',
+  rev:'<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9v.01M18 15v.01"/>',
+  profit:'<path d="M12 3v18M16.5 7.5c0-1.9-2-3-4.5-3s-4.5 1.2-4.5 3.2c0 4.6 9 2.3 9 6.9 0 2-2 3.4-4.5 3.4s-4.5-1.2-4.5-3"/>',
+  team:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2c3 .2 5.5 2.6 5.5 5.8"/>',
+  office:'<path d="M4 21V6l8-3 8 3v15M2 21h20M9 21v-5h6v5M8 9h2M14 9h2M8 13h2M14 13h2"/>',
+  ipo:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  prods:'<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/>',
+  goal:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/>'};
+const MS_VAL=[1e6,1e7,1e8,1e9,1e10,1e11],MS_REV=[1e5,1e6,1e7,1e8],MS_EMP=[10,50,100,500,1000],MS_PROD=[5,10,25];
+/* id → {k: simge, t: başlık, s: alt metin, big: konfeti} ; şu an ulaşılmış olanların listesi */
+function msReached(){const out=[],h=G.hist[G.hist.length-1]||{},I=infl(),v=valuation();
+  for(const t of MS_VAL)if(v>=t*I)out.push({id:'val'+t,k:'val',big:t>=1e9,t:LANG_EN?`Company value passed ${money(t*I)}`:`Şirket değeri ${money(t*I)}'i aştı`,s:LANG_EN?`Valuation today: ${money(v)}`:`Bugünkü değerleme: ${money(v)}`});
+  for(const t of MS_REV)if((h.rev||0)>=t*I)out.push({id:'rev'+t,k:'rev',big:t>=1e7,t:LANG_EN?`${money(t*I)} revenue in a month`:`Bir ayda ${money(t*I)} gelir`,s:LANG_EN?`This month: ${money(h.rev)}`:`Bu ay: ${money(h.rev)}`});
+  if((h.profit||0)>0&&G.hist.length>1)out.push({id:'profit1',k:'profit',big:true,t:LANG_EN?'First profitable month!':'İlk kârlı ay!',s:LANG_EN?`Profit: ${money(h.profit)}. The company stands on its own feet.`:`Kâr: ${money(h.profit)}. Şirket artık kendi ayakları üstünde.`});
+  for(const t of MS_EMP)if(G.emps.length>=t)out.push({id:'emp'+t,k:'team',big:t>=100,t:LANG_EN?`${t} people on the team`:`Ekip ${t} kişi oldu`,s:LANG_EN?`From a garage of one to ${G.emps.length} people.`:`Tek kişilik garajdan ${G.emps.length} kişiye.`});
+  for(let i=1;i<=(G.office||0);i++)out.push({id:'off'+i,k:'office',big:i>=3,t:LANG_EN?`New office: ${OFFICES[i].n}`:`Yeni ofis: ${OFFICES[i].n}`,s:LANG_EN?`Room for ${OFFICES[i].cap} people per floor.`:`Katta ${OFFICES[i].cap} kişilik yer.`});
+  if(G.pub)out.push({id:'ipo',k:'ipo',big:true,t:LANG_EN?'You went public!':'Halka arz oldun!',s:LANG_EN?`Share price $${fx(G.pub.price,2)} · market value ${money(marketCap())}`:`Hisse $${fx(G.pub.price,2)} · piyasa değeri ${money(marketCap())}`});
+  const np=myActive().length;for(const t of MS_PROD)if(np>=t)out.push({id:'prod'+t,k:'prods',big:false,t:LANG_EN?`${t} products on the market`:`Piyasada ${t} ürün`,s:LANG_EN?'Your portfolio keeps growing.':'Portföyün büyüyor.'});
+  const sc=G.scn;if(sc&&sc.got){const gs=scnGoals();for(const i in sc.got)if(sc.got[i]!=null&&gs[i])out.push({id:`goal${sc.id}_${i}`,k:'goal',big:true,t:LANG_EN?'Scenario goal reached':'Senaryo hedefi tamam',s:gs[i].n});}
+  return out;}
+function msCheck(){if(!G)return;const first=!G.ms;G.ms=G.ms||{};const nw=[];for(const m of msReached())if(!G.ms[m.id]){G.ms[m.id]=G.day;if(!first)nw.push(m);}
+  if(!nw.length)return;UI.msQ=(UI.msQ||[]).concat(nw).slice(-4);msShow();}
+function msShow(){if(!UI.msQ||!UI.msQ.length||document.getElementById('mscard'))return;
+  if(!feelOn()||UI.modal){if(!UI.msWait){UI.msWait=setTimeout(()=>{UI.msWait=null;msShow();},1500);}return;}
+  if(document.getElementById('lmom')){setTimeout(msShow,1200);return;}
+  const m=UI.msQ.shift(),el=document.createElement('div');el.id='mscard';el.className='mscard'+(m.big?' big':'');el.setAttribute('role','status');
+  el.innerHTML=`<div class="ms-in"><span class="ms-ic"><svg viewBox="0 0 24 24" aria-hidden="true">${MS_IC[m.k]||MS_IC.goal}</svg></span><span class="eyebrow">${LANG_EN?'Milestone':'Kilometre taşı'}</span><b class="ms-t">${esc(m.t)}</b><span class="ms-s">${esc(m.s)}</span></div>`;
+  document.body.appendChild(el);el.addEventListener('click',()=>el.remove());try{sfx('ach');}catch(e){}
+  if(m.big)feelConfetti(90);
+  setTimeout(()=>{if(el.isConnected){el.classList.add('out');setTimeout(()=>{el.remove();msShow();},300);}else msShow();},m.big?3400:2600);}
+/* tam ekran konfeti (lansman anındakiyle aynı his) */
+function feelConfetti(n){if(reduceMotion()||PREF.feelOff)return;const cv=document.createElement('canvas');cv.className='fx-cf';cv.setAttribute('aria-hidden','true');document.body.appendChild(cv);
+  const W=cv.width=window.innerWidth,H=cv.height=window.innerHeight,x=cv.getContext('2d'),cols=['#E2581B','#2B8A3E','#3B5BDB','#F2B705','#C2255C','#0B7285'];
+  const P=Array.from({length:n},()=>({x:W/2+(Math.random()-0.5)*160,y:H*0.38,vx:(Math.random()-0.5)*12,vy:-Math.random()*11-4,r:Math.random()*Math.PI,c:cols[Math.floor(Math.random()*cols.length)],w:5+Math.random()*5}));const t0=performance.now();
+  const fr=t=>{if(!cv.isConnected)return;x.clearRect(0,0,W,H);for(const q of P){q.vy+=0.3;q.vx*=0.995;q.x+=q.vx;q.y+=q.vy;q.r+=0.18;x.save();x.translate(q.x,q.y);x.rotate(q.r);x.fillStyle=q.c;x.fillRect(-q.w/2,-2,q.w,4);x.restore();}if(t-t0<2200)requestAnimationFrame(fr);else cv.remove();};requestAnimationFrame(fr);}
+/* ay sonu: göstergeler kısa bir nabız atar */
+function feelPulse(profit){if(!feelOn()||reduceMotion())return;for(const el of document.querySelectorAll('.dh-kpis .dkpi b,.dpcards .dpc')){el.classList.remove('pulse','pulse-neg');void el.offsetWidth;el.classList.add(profit<0&&el.tagName==='B'?'pulse-neg':'pulse');}}
 /* ============================== MEGA PROJECTS ============================== */
 const MEGA=[
   {id:'edu',n:(LANG_EN?"Education foundation":'Eğitim vakfı'),cost:40e6,mo:6,d:(LANG_EN?"Scholarships and labs for universities: sustainability +8, brand +3, candidate quality +0.4.":'Üniversitelere burs ve laboratuvar: sürdürülebilirlik +8, marka +3, aday kalitesi +0,4.')},
@@ -12498,6 +12585,7 @@ function act0(a,ds){
       spend(cost,'other');filePatent(r.id,r.n,PAT_CAT[r.id],patResW(r));news((LANG_EN?`Patent application filed: ${r.n}. Decision in 4-8 months.`:`Patent başvurusu yapıldı: ${r.n}. Karar 4-8 ay içinde.`));break;}
     case 'suenew':{const c=comp(ds.id)||liveComps().slice().sort((a,b)=>b.emp-a.emp)[0];if(!c)break;UI.sue={cid:c.id,cat:null,firm:'std'};if(ds.id){UI.tab='res';(UI.sub=UI.sub||{}).res='patent';UI.rival=null;window.scrollTo({top:0});}break;}
     case 'sueclose':UI.sue=null;break;
+    case 'prodview':PREF.prodView=ds.v==='table'?'table':'cards';prefSave();break;
     case 'suego':{const su=UI.sue,c=su&&comp(su.cid);if(!c||!su.cat||myPat(su.cat)<=0||crossWith(c.id)||G.cases.some(k=>k.cid===c.id))break;
       openCase(c.id,su.cat,'pl',su.firm);news((LANG_EN?`You filed a ${CATS[su.cat].n.toLocaleLowerCase(LOC)} patent lawsuit against ${c.name} (${LAW[su.firm].n}).`:`${c.name} aleyhine ${CATS[su.cat].n.toLocaleLowerCase(LOC)} patent davası açtın (${LAW[su.firm].n}).`),'mkt',true);UI.sue=null;break;}
     case 'casedrop':{const k=G.cases.find(x=>x.id===id);if(!k)break;G.cases=G.cases.filter(x=>x!==k);const c=comp(k.cid);if(c)c.rel=clamp(relOf(c)+5,-100,100);news((LANG_EN?"Patent lawsuit withdrawn.":'Patent davası geri çekildi.'));break;}
@@ -12791,7 +12879,7 @@ function uiEnhance(root){
     const d=document.createElement('details');d.className='tip'+(el.classList.contains('pb')?' pb':'');el.classList.remove('pb');if(el.getAttribute('style'))d.setAttribute('style',el.getAttribute('style'));el.removeAttribute('style');
     const su=document.createElement('summary'),sp=document.createElement('span');sp.className='tip-s';sp.textContent=first;const mo=document.createElement('b');mo.className='tip-m';mo.textContent=(LANG_EN?"More":'Devamı');su.append(sp,' ',mo);
     el.replaceWith(d);d.append(su,el);}
-  let ti=0;for(const tb of root.querySelectorAll('table')){const ths=[...tb.querySelectorAll(':scope>thead>tr>th')];if(ths.length<5)continue;tb.classList.add('rt');ti++;
+  let ti=0;for(const tb of root.querySelectorAll('table')){if(tb.classList.contains('pcards'))continue;/* kart görünümü kendi düzenini kurar (v175) */const ths=[...tb.querySelectorAll(':scope>thead>tr>th')];if(ths.length<5)continue;tb.classList.add('rt');ti++;
     const L=ths.map(x=>x.textContent.trim());let ri=0;const rows=[...tb.querySelectorAll(':scope>tbody>tr')],tk=base+':t'+ti,cut=mob&&rows.length>10&&!(UI.rtAll&&UI.rtAll[tk]);
     if(cut){rows.slice(8).forEach(r=>r.classList.add('rt-cut'));const tr=document.createElement('tr');tr.className='rt-full rt-showall';const td=document.createElement('td');td.colSpan=ths.length;const b=document.createElement('button');b.className='btn sm';b.setAttribute('data-act','rtall');b.setAttribute('data-k',tk);b.textContent=(LANG_EN?`Show ${rows.length-8} more rows`:`${rows.length-8} satır daha göster`);td.appendChild(b);tr.appendChild(td);tb.querySelector(':scope>tbody').appendChild(tr);}
     for(const tr of rows){const tds=[...tr.children];ri++;if(tds.some(td=>td.colSpan>1)){tr.classList.add('rt-full');continue;}let di=0,nx=0;
@@ -13393,24 +13481,24 @@ function vProd(){
     const sales=hw?p.sr:p.units,mp=sales*((hw?p.price:revPerUser(p))-uc);
     const cpu=hw&&p.spec.cpu?prod(p.spec.cpu):null;
     const bg=p.active&&p.bugs!=null?Math.round(p.bugs):null,tdv=p.active?Math.round(tdOf(p)):null;
-    return (LANG_EN?`<tr class="${p.active?'':'dim'}"><td>${sbMini(p,14)}<button class="linkb" data-act="pdet" data-id="${p.id}"><b>${esc(p.name)}</b></button> <span class="small muted num">${verStr(p)}</span><div class="small muted">${sbOf(p)?esc(sbOf(p).n)+' · ':''}${CATS[p.cat].n} · ${fmtDate(p.launch)}${p.review!=null?` · press <b class="${p.review>=8?'pos':p.review<5?'neg':''}">${fx(p.review,1)}</b>`:''}${cpu?` · ${esc(cpu.name)}`:''}${hw&&p.cat==='cpu'?` · ${p.spec.node}nm ${p.spec.cores} cores ${fx(p.spec.clk,1)} GHz`:''}${!p.spec&&HW.includes(p.cat)?" · acquired":''}${p.priceLock>G.day?` · <span class="neg">no price hikes until ${fmtDate(p.priceLock)}</span>`:''}${p.waitLaunch?` · <span class="warn">Launch ${fmtDate(p.waitLaunch.day)} (${LTIER[p.waitLaunch.t].n.toLocaleLowerCase(LOC)})</span>`:''}</div></td>
-    <td><div class="skill"><div class="bar"><i style="width:${Math.min(100,v*80)}%;background:${v>=1?'var(--ok)':v>=0.8?'var(--warn)':'var(--bad)'}"></i></div><span class="num">${pct(v,0)}</span></div></td>
-    <td class="r">${p.cat==='app'&&pmOf(p)!=='paid'?`<span class="small muted">${pmOf(p)==='freemium'?'freemium':'reklam'}</span>`:p.active||p.waitLaunch?`<input type="number" aria-label="Price" min="0" step="${SUBP(p.cat)?'0.5':'5'}" value="${p.price}" data-price="${p.id}">`:money(p.price)}${p.cat==='app'||p.cat==='os'?'':`<div class="small muted num">unit ${money(uc)}</div>`}${pmKind(p)&&pmOf(p)!=='ads'&&pmOf(p)!=='flat'?`<div class="small muted">${PM[pmKind(p)][pmOf(p)].n}</div>`:''}</td>
-    <td class="r num">${p.active?num(sales):'—'}<div class="small muted">${CATS[p.cat].unit}/mo</div><div class="tr-sp">${spark(p.h)}</div></td>
-    <td>${p.active?`<div class="num small"><span class="${bg>20?'neg':bg>8?'warn':''}" title="Open bugs">${bg!=null?bg:'—'} bugs</span> · <span class="${tdLbl(tdOf(p))[1]}" title="${tdLbl(tdOf(p))[0]} tech debt">${tdv} debt</span></div>${p.sat!=null?`<div title="Satisfaction">${meter(p.sat,satState(p.sat))}</div>`:''}`:'—'}</td>
-    <td class="r num">${hw?`${num(p.fg)}${p.lost>50?`<div class="small neg">-${num(p.lost)}/mo lost</div>`:''}`:'—'}</td>
-    <td class="r num ${mp>=0?'pos':'neg'}">${p.active?money(mp):'—'}</td>
-    <td class="r">${p.active?`<span class="acts">${aiOn()&&p.review!=null?`<button class="btn sm ghost" data-act="press" data-id="${p.id}" title="Fictional magazine review (Claude)">Press</button>`:''}${p.camp>G.day?`<span class="chip st-ok">Ad ${p.camp-G.day}d</span>`:`<button class="btn sm" data-act="camp" data-id="${p.id}" title="Appeal +60% for 30 days">Advertise ${money(CATS[p.cat].camp*infl())}</button>`}<button class="btn sm ghost" data-act="wiopen" data-k="px" data-id="${p.id}" title="Preview price and ad options for 60 days">What if?</button><button class="btn sm" data-act="updopen" data-id="${p.id}" ${G.projects.some(x=>x.upd&&x.upd.pid===p.id)?"disabled title=\"Update in progress\"":''}>Update</button><button class="btn sm ghost" data-act="retire" data-id="${p.id}" title="Withdraw the product from the market">Retire</button></span>`:hw&&p.fg>1?`<button class="btn sm" data-act="clear" data-id="${p.id}">Liquidate inventory</button>`:"<span class=\"small muted\">Off market</span>"}</td></tr>`:`<tr class="${p.active?'':'dim'}"><td>${sbMini(p,14)}<button class="linkb" data-act="pdet" data-id="${p.id}"><b>${esc(p.name)}</b></button> <span class="small muted num">${verStr(p)}</span><div class="small muted">${sbOf(p)?esc(sbOf(p).n)+' · ':''}${CATS[p.cat].n} · ${fmtDate(p.launch)}${p.review!=null?` · basın <b class="${p.review>=8?'pos':p.review<5?'neg':''}">${fx(p.review,1)}</b>`:''}${cpu?` · ${esc(cpu.name)}`:''}${hw&&p.cat==='cpu'?` · ${p.spec.node}nm ${p.spec.cores} çekirdek ${fx(p.spec.clk,1)} GHz`:''}${!p.spec&&HW.includes(p.cat)?' · devralındı':''}${p.priceLock>G.day?` · <span class="neg">zam yasağı ${fmtDate(p.priceLock)}</span>`:''}${p.waitLaunch?` · <span class="warn">Lansman ${fmtDate(p.waitLaunch.day)} (${LTIER[p.waitLaunch.t].n.toLocaleLowerCase(LOC)})</span>`:''}</div></td>
-    <td><div class="skill"><div class="bar"><i style="width:${Math.min(100,v*80)}%;background:${v>=1?'var(--ok)':v>=0.8?'var(--warn)':'var(--bad)'}"></i></div><span class="num">${pct(v,0)}</span></div></td>
-    <td class="r">${p.cat==='app'&&pmOf(p)!=='paid'?`<span class="small muted">${pmOf(p)==='freemium'?'freemium':'reklam'}</span>`:p.active||p.waitLaunch?`<input type="number" aria-label="Fiyat" min="0" step="${SUBP(p.cat)?'0.5':'5'}" value="${p.price}" data-price="${p.id}">`:money(p.price)}${p.cat==='app'||p.cat==='os'?'':`<div class="small muted num">birim ${money(uc)}</div>`}${pmKind(p)&&pmOf(p)!=='ads'&&pmOf(p)!=='flat'?`<div class="small muted">${PM[pmKind(p)][pmOf(p)].n}</div>`:''}</td>
-    <td class="r num">${p.active?num(sales):'—'}<div class="small muted">${CATS[p.cat].unit}/ay</div><div class="tr-sp">${spark(p.h)}</div></td>
-    <td>${p.active?`<div class="num small"><span class="${bg>20?'neg':bg>8?'warn':''}" title="Açık hata">${bg!=null?bg:'—'} hata</span> · <span class="${tdLbl(tdOf(p))[1]}" title="${tdLbl(tdOf(p))[0]} teknik borç">${tdv} borç</span></div>${p.sat!=null?`<div title="Memnuniyet">${meter(p.sat,satState(p.sat))}</div>`:''}`:'—'}</td>
-    <td class="r num">${hw?`${num(p.fg)}${p.lost>50?`<div class="small neg">-${num(p.lost)}/ay kaçan</div>`:''}`:'—'}</td>
-    <td class="r num ${mp>=0?'pos':'neg'}">${p.active?money(mp):'—'}</td>
-    <td class="r">${p.active?`<span class="acts">${aiOn()&&p.review!=null?`<button class="btn sm ghost" data-act="press" data-id="${p.id}" title="Kurgusal dergi incelemesi (Claude)">Basın</button>`:''}${p.camp>G.day?`<span class="chip st-ok">Reklam ${p.camp-G.day}g</span>`:`<button class="btn sm" data-act="camp" data-id="${p.id}" title="30 gün boyunca çekicilik +%60">Reklam ${money(CATS[p.cat].camp*infl())}</button>`}<button class="btn sm ghost" data-act="wiopen" data-k="px" data-id="${p.id}" title="Fiyat ve reklam seçeneklerini 60 gün önizle">Ne olur?</button><button class="btn sm" data-act="updopen" data-id="${p.id}" ${G.projects.some(x=>x.upd&&x.upd.pid===p.id)?'disabled title="Güncelleme sürüyor"':''}>Güncelle</button><button class="btn sm ghost" data-act="retire" data-id="${p.id}" title="Ürünü piyasadan çek">Piyasadan çek</button></span>`:hw&&p.fg>1?`<button class="btn sm" data-act="clear" data-id="${p.id}">Stoğu tasfiye et</button>`:'<span class="small muted">Piyasada değil</span>'}</td></tr>`);}).join('');
-  return (LANG_EN?`<section class="panel"><div class="ph"><h2>Products</h2><span class="sub" title="Freshness is the score relative to today's market standard. Products age as technology advances.">freshness = score vs. today's standard</span></div>
-  <div class="tw"><table class="ptab"><thead><tr><th>Product</th><th>Freshness</th><th class="r">Price</th><th class="r">Sales</th><th>Quality</th><th class="r">Inventory</th><th class="r">Monthly profit</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></section>${vVoice()}${vDebt()}${vPricing()}${vSupportPanel()}${vEco()}`:`<section class="panel"><div class="ph"><h2>Ürünler</h2><span class="sub" title="Güncellik, puanın bugünkü pazar standardına oranı. Teknoloji ilerledikçe ürünler eskir.">güncellik = bugünkü standarda oran</span></div>
-  <div class="tw"><table class="ptab"><thead><tr><th>Ürün</th><th>Güncellik</th><th class="r">Fiyat</th><th class="r">Satış</th><th>Kalite</th><th class="r">Stok</th><th class="r">Aylık kâr</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></section>${vVoice()}${vDebt()}${vPricing()}${vSupportPanel()}${vEco()}`);
+    return (LANG_EN?`<tr class="${p.active?'':'dim'}" style="--cc:${deskCC(p.cat)}"><td class="pc-name"><span class="pc-ic" aria-hidden="true">${CAT_ICON[p.cat]||''}</span>${sbMini(p,14)}<button class="linkb" data-act="pdet" data-id="${p.id}"><b>${esc(p.name)}</b></button> <span class="small muted num">${verStr(p)}</span><div class="small muted">${sbOf(p)?esc(sbOf(p).n)+' · ':''}${CATS[p.cat].n} · ${fmtDate(p.launch)}${p.review!=null?` · press <b class="${p.review>=8?'pos':p.review<5?'neg':''}">${fx(p.review,1)}</b>`:''}${cpu?` · ${esc(cpu.name)}`:''}${hw&&p.cat==='cpu'?` · ${p.spec.node}nm ${p.spec.cores} cores ${fx(p.spec.clk,1)} GHz`:''}${!p.spec&&HW.includes(p.cat)?" · acquired":''}${p.priceLock>G.day?` · <span class="neg">no price hikes until ${fmtDate(p.priceLock)}</span>`:''}${p.waitLaunch?` · <span class="warn">Launch ${fmtDate(p.waitLaunch.day)} (${LTIER[p.waitLaunch.t].n.toLocaleLowerCase(LOC)})</span>`:''}</div></td>
+    <td class="pc-fresh" data-l="Freshness"><div class="skill"><div class="bar"><i style="width:${Math.min(100,v*80)}%;background:${v>=1?'var(--ok)':v>=0.8?'var(--warn)':'var(--bad)'}"></i></div><span class="num">${pct(v,0)}</span></div><span class="pc-ring">${deskRing(Math.min(1,v),v>=1?'var(--ok)':v>=0.8?'var(--warn)':'var(--bad)',52,Math.round(Math.min(1.5,v)*100)+'')}</span></td>
+    <td class="r pc-price" data-l="Price">${p.cat==='app'&&pmOf(p)!=='paid'?`<span class="small muted">${pmOf(p)==='freemium'?'freemium':'reklam'}</span>`:p.active||p.waitLaunch?`<input type="number" aria-label="Price" min="0" step="${SUBP(p.cat)?'0.5':'5'}" value="${p.price}" data-price="${p.id}">`:money(p.price)}${p.cat==='app'||p.cat==='os'?'':`<div class="small muted num">unit ${money(uc)}</div>`}${pmKind(p)&&pmOf(p)!=='ads'&&pmOf(p)!=='flat'?`<div class="small muted">${PM[pmKind(p)][pmOf(p)].n}</div>`:''}</td>
+    <td class="r num pc-sales" data-l="Sales">${p.active?num(sales):'—'}<div class="small muted">${CATS[p.cat].unit}/mo</div><div class="tr-sp">${spark(p.h)}</div></td>
+    <td class="pc-qual" data-l="Quality">${p.active?`<div class="num small"><span class="${bg>20?'neg':bg>8?'warn':''}" title="Open bugs">${bg!=null?bg:'—'} bugs</span> · <span class="${tdLbl(tdOf(p))[1]}" title="${tdLbl(tdOf(p))[0]} tech debt">${tdv} debt</span></div>${p.sat!=null?`<div title="Satisfaction">${meter(p.sat,satState(p.sat))}</div>`:''}`:'—'}</td>
+    <td class="r num pc-stock" data-l="Inventory">${hw?`${num(p.fg)}${p.lost>50?`<div class="small neg">-${num(p.lost)}/mo lost</div>`:''}`:'—'}</td>
+    <td class="r num ${mp>=0?'pos':'neg'} pc-profit" data-l="Monthly profit">${p.active?money(mp):'—'}</td>
+    <td class="r pc-acts">${p.active?`<span class="acts">${aiOn()&&p.review!=null?`<button class="btn sm ghost" data-act="press" data-id="${p.id}" title="Fictional magazine review (Claude)">Press</button>`:''}${p.camp>G.day?`<span class="chip st-ok">Ad ${p.camp-G.day}d</span>`:`<button class="btn sm" data-act="camp" data-id="${p.id}" title="Appeal +60% for 30 days">Advertise ${money(CATS[p.cat].camp*infl())}</button>`}<button class="btn sm ghost" data-act="wiopen" data-k="px" data-id="${p.id}" title="Preview price and ad options for 60 days">What if?</button><button class="btn sm" data-act="updopen" data-id="${p.id}" ${G.projects.some(x=>x.upd&&x.upd.pid===p.id)?"disabled title=\"Update in progress\"":''}>Update</button><button class="btn sm ghost" data-act="retire" data-id="${p.id}" title="Withdraw the product from the market">Retire</button></span>`:hw&&p.fg>1?`<button class="btn sm" data-act="clear" data-id="${p.id}">Liquidate inventory</button>`:"<span class=\"small muted\">Off market</span>"}</td></tr>`:`<tr class="${p.active?'':'dim'}" style="--cc:${deskCC(p.cat)}"><td class="pc-name"><span class="pc-ic" aria-hidden="true">${CAT_ICON[p.cat]||''}</span>${sbMini(p,14)}<button class="linkb" data-act="pdet" data-id="${p.id}"><b>${esc(p.name)}</b></button> <span class="small muted num">${verStr(p)}</span><div class="small muted">${sbOf(p)?esc(sbOf(p).n)+' · ':''}${CATS[p.cat].n} · ${fmtDate(p.launch)}${p.review!=null?` · basın <b class="${p.review>=8?'pos':p.review<5?'neg':''}">${fx(p.review,1)}</b>`:''}${cpu?` · ${esc(cpu.name)}`:''}${hw&&p.cat==='cpu'?` · ${p.spec.node}nm ${p.spec.cores} çekirdek ${fx(p.spec.clk,1)} GHz`:''}${!p.spec&&HW.includes(p.cat)?' · devralındı':''}${p.priceLock>G.day?` · <span class="neg">zam yasağı ${fmtDate(p.priceLock)}</span>`:''}${p.waitLaunch?` · <span class="warn">Lansman ${fmtDate(p.waitLaunch.day)} (${LTIER[p.waitLaunch.t].n.toLocaleLowerCase(LOC)})</span>`:''}</div></td>
+    <td class="pc-fresh" data-l="Güncellik"><div class="skill"><div class="bar"><i style="width:${Math.min(100,v*80)}%;background:${v>=1?'var(--ok)':v>=0.8?'var(--warn)':'var(--bad)'}"></i></div><span class="num">${pct(v,0)}</span></div><span class="pc-ring">${deskRing(Math.min(1,v),v>=1?'var(--ok)':v>=0.8?'var(--warn)':'var(--bad)',52,Math.round(Math.min(1.5,v)*100)+'')}</span></td>
+    <td class="r pc-price" data-l="Fiyat">${p.cat==='app'&&pmOf(p)!=='paid'?`<span class="small muted">${pmOf(p)==='freemium'?'freemium':'reklam'}</span>`:p.active||p.waitLaunch?`<input type="number" aria-label="Fiyat" min="0" step="${SUBP(p.cat)?'0.5':'5'}" value="${p.price}" data-price="${p.id}">`:money(p.price)}${p.cat==='app'||p.cat==='os'?'':`<div class="small muted num">birim ${money(uc)}</div>`}${pmKind(p)&&pmOf(p)!=='ads'&&pmOf(p)!=='flat'?`<div class="small muted">${PM[pmKind(p)][pmOf(p)].n}</div>`:''}</td>
+    <td class="r num pc-sales" data-l="Satış">${p.active?num(sales):'—'}<div class="small muted">${CATS[p.cat].unit}/ay</div><div class="tr-sp">${spark(p.h)}</div></td>
+    <td class="pc-qual" data-l="Kalite">${p.active?`<div class="num small"><span class="${bg>20?'neg':bg>8?'warn':''}" title="Açık hata">${bg!=null?bg:'—'} hata</span> · <span class="${tdLbl(tdOf(p))[1]}" title="${tdLbl(tdOf(p))[0]} teknik borç">${tdv} borç</span></div>${p.sat!=null?`<div title="Memnuniyet">${meter(p.sat,satState(p.sat))}</div>`:''}`:'—'}</td>
+    <td class="r num pc-stock" data-l="Stok">${hw?`${num(p.fg)}${p.lost>50?`<div class="small neg">-${num(p.lost)}/ay kaçan</div>`:''}`:'—'}</td>
+    <td class="r num ${mp>=0?'pos':'neg'} pc-profit" data-l="Aylık kâr">${p.active?money(mp):'—'}</td>
+    <td class="r pc-acts">${p.active?`<span class="acts">${aiOn()&&p.review!=null?`<button class="btn sm ghost" data-act="press" data-id="${p.id}" title="Kurgusal dergi incelemesi (Claude)">Basın</button>`:''}${p.camp>G.day?`<span class="chip st-ok">Reklam ${p.camp-G.day}g</span>`:`<button class="btn sm" data-act="camp" data-id="${p.id}" title="30 gün boyunca çekicilik +%60">Reklam ${money(CATS[p.cat].camp*infl())}</button>`}<button class="btn sm ghost" data-act="wiopen" data-k="px" data-id="${p.id}" title="Fiyat ve reklam seçeneklerini 60 gün önizle">Ne olur?</button><button class="btn sm" data-act="updopen" data-id="${p.id}" ${G.projects.some(x=>x.upd&&x.upd.pid===p.id)?'disabled title="Güncelleme sürüyor"':''}>Güncelle</button><button class="btn sm ghost" data-act="retire" data-id="${p.id}" title="Ürünü piyasadan çek">Piyasadan çek</button></span>`:hw&&p.fg>1?`<button class="btn sm" data-act="clear" data-id="${p.id}">Stoğu tasfiye et</button>`:'<span class="small muted">Piyasada değil</span>'}</td></tr>`);}).join('');
+  return (LANG_EN?`<section class="panel"><div class="ph"><h2>Products</h2><span class="seg pview" role="group" aria-label="View"><button class="btn sm ${PREF.prodView==='table'?'ghost':'primary'}" data-act="prodview" data-v="cards" aria-pressed="${PREF.prodView!=='table'}">Cards</button><button class="btn sm ${PREF.prodView==='table'?'primary':'ghost'}" data-act="prodview" data-v="table" aria-pressed="${PREF.prodView==='table'}">Table</button></span><span class="sub" title="Freshness is the score relative to today's market standard. Products age as technology advances.">freshness = score vs. today's standard</span></div>
+  <div class="tw"><table class="ptab${PREF.prodView==='table'?'':' pcards'}"><thead><tr><th>Product</th><th>Freshness</th><th class="r">Price</th><th class="r">Sales</th><th>Quality</th><th class="r">Inventory</th><th class="r">Monthly profit</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></section>${vVoice()}${vDebt()}${vPricing()}${vSupportPanel()}${vEco()}`:`<section class="panel"><div class="ph"><h2>Ürünler</h2><span class="seg pview" role="group" aria-label="Görünüm"><button class="btn sm ${PREF.prodView==='table'?'ghost':'primary'}" data-act="prodview" data-v="cards" aria-pressed="${PREF.prodView!=='table'}">Kart</button><button class="btn sm ${PREF.prodView==='table'?'primary':'ghost'}" data-act="prodview" data-v="table" aria-pressed="${PREF.prodView==='table'}">Tablo</button></span><span class="sub" title="Güncellik, puanın bugünkü pazar standardına oranı. Teknoloji ilerledikçe ürünler eskir.">güncellik = bugünkü standarda oran</span></div>
+  <div class="tw"><table class="ptab${PREF.prodView==='table'?'':' pcards'}"><thead><tr><th>Ürün</th><th>Güncellik</th><th class="r">Fiyat</th><th class="r">Satış</th><th>Kalite</th><th class="r">Stok</th><th class="r">Aylık kâr</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></section>${vVoice()}${vDebt()}${vPricing()}${vSupportPanel()}${vEco()}`);
 }
 
 /* ---------- supply chain diagram ---------- */
@@ -15240,7 +15328,7 @@ document.addEventListener('keydown',e=>{
 
 /* ============================== ERROR GUARD ============================== */
 /* Beklenmeyen bir hata oyunu sessizce dondurmasın: oyunu duraklat, durumu kurtarma anahtarına yaz, oyuncuya seçenek ve kopyalanabilir rapor sun. */
-const VER='v174',RESCUE_KEY='silikon-garaj-rescue';
+const VER='v175',RESCUE_KEY='silikon-garaj-rescue';
 const ERR={list:[],open:false,lastRescue:0,quiet:false};
 function errKey(e){const m=(e&&e.message)||String(e),f=((e&&e.stack)||'').split('\n').find(l=>/at /.test(l))||'';return m+'|'+f.trim();}
 function errCatch(src,e,pause=true){

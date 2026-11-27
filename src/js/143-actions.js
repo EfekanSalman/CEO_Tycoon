@@ -368,6 +368,7 @@ function act0(a,ds){
       spend(cost,'other');filePatent(r.id,r.n,PAT_CAT[r.id],patResW(r));news((LANG_EN?`Patent application filed: ${r.n}. Decision in 4-8 months.`:`Patent başvurusu yapıldı: ${r.n}. Karar 4-8 ay içinde.`));break;}
     case 'suenew':{const c=comp(ds.id)||liveComps().slice().sort((a,b)=>b.emp-a.emp)[0];if(!c)break;UI.sue={cid:c.id,cat:null,firm:'std'};if(ds.id){UI.tab='res';(UI.sub=UI.sub||{}).res='patent';UI.rival=null;window.scrollTo({top:0});}break;}
     case 'sueclose':UI.sue=null;break;
+    case 'prodview':PREF.prodView=ds.v==='table'?'table':'cards';prefSave();break;
     case 'suego':{const su=UI.sue,c=su&&comp(su.cid);if(!c||!su.cat||myPat(su.cat)<=0||crossWith(c.id)||G.cases.some(k=>k.cid===c.id))break;
       openCase(c.id,su.cat,'pl',su.firm);news((LANG_EN?`You filed a ${CATS[su.cat].n.toLocaleLowerCase(LOC)} patent lawsuit against ${c.name} (${LAW[su.firm].n}).`:`${c.name} aleyhine ${CATS[su.cat].n.toLocaleLowerCase(LOC)} patent davası açtın (${LAW[su.firm].n}).`),'mkt',true);UI.sue=null;break;}
     case 'casedrop':{const k=G.cases.find(x=>x.id===id);if(!k)break;G.cases=G.cases.filter(x=>x!==k);const c=comp(k.cid);if(c)c.rel=clamp(relOf(c)+5,-100,100);news((LANG_EN?"Patent lawsuit withdrawn.":'Patent davası geri çekildi.'));break;}
