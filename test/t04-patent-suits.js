@@ -7,7 +7,7 @@ const {open,startScn}=require('../tools/page');const SUIT_GAP_T=3;
     const c=liveComps()[0];initPats(c);const cat=c.focus[0];
     // ürün ve pay: bu kategoride oyuncunun payı %10 olsun
     const p={id:nid(),owner:'P',cat,name:'T',score:S(cat),price:100,unitCost:40,launch:G.day,active:true,units:20000,share:0.1,total:0,camp:0,sr:20000};G.products.push(p);
-    G.pats=[];G.cash=5e6;const R0=Math.random;const trig=(day,gap)=>{G.day=day;for(const x of liveComps()){initPats(x);x.pats[cat]=x===c?gap:0;x.tech=0;}c.aggr=0.9;c.rel=0;G.suitCool=0;G.pending=null;G.cases=[];G.cross={};let got=null;const T0=window.triggerChoice;window.triggerChoice=(id,d)=>{got={id,d};};
+    G.pats=[];G.cash=5e6;const R0=Math.random;const trig=(day,gap)=>{G.day=day;for(const x of liveComps()){initPats(x);x.pats[cat]=x===c?gap+1:0;/* +1: Math.random=0,01 iken aynı ay eskime 1 puan düşürür (v170) */x.tech=0;}c.aggr=0.9;c.rel=0;G.suitCool=0;G.pending=null;G.cases=[];G.cross={};let got=null;const T0=window.triggerChoice;window.triggerChoice=(id,d)=>{got={id,d};};
       Math.random=()=>0.01;try{patMonthly();}finally{Math.random=R0;window.triggerChoice=T0;}return got;};
     const d0=G.day,early=trig(400,9),gap2=trig(d0+10,2),gap3=trig(d0+20,3);
     G.pats=[{id:nid(),n:'T',cats:[cat],w:4,grant:G.day,exp:G.day+9999}];const det4=suitDeter(cat);G.pats[0].w=9;const det9=suitDeter(cat);G.pats=[];const cl=gap3&&gap3.d.claim;G.cash=200000;const smallCash=suitClaim(cat);
@@ -26,6 +26,10 @@ const {open,startScn}=require('../tools/page');const SUIT_GAP_T=3;
   const pw=await pg.evaluate(()=>{const r=RES.find(x=>PAT_CAT[x.id]&&x.rp>=4000),q=RES.find(x=>PAT_CAT[x.id]&&x.rp<4000);G.patPend=[];G.patFiled={};G.cash=1e7;G.res.done[r.id]=G.day;
     if(!has(r.id))return {err:'has'};act('patfile',{rid:r.id});const pp=G.patPend.find(x=>x.src===r.id);return {big:patResW(r),small:patResW(q),filed:pp&&pp.w};});
   console.log('patent gücü:',JSON.stringify(pw));ok(pw.big===3&&pw.small===2&&pw.filed===3,'patent weight');
+  // rakip patentleri eskir (v170): her puan ayda pats/144 ihtimalle düşer. Math.random=0,1 iken 20 puan, 20/144>0,1 olduğu sürece düşer → 14'te durur
+  const dec=await pg.evaluate(()=>{const c=liveComps()[0],cat=c.focus[0];for(const x of liveComps()){initPats(x);x.tech=0;x.aggr=0;}c.pats={[cat]:20};const R0=Math.random,T0=window.triggerChoice;window.triggerChoice=()=>{};Math.random=()=>0.1;
+    try{for(let i=0;i<12;i++)patMonthly();}finally{Math.random=R0;window.triggerChoice=T0;}return {v:c.pats[cat],consts:[RV_PAT_INIT,RV_PAT_GROW,RV_PAT_LIFE]};});
+  console.log('rakip patent eskimesi:',JSON.stringify(dec));ok(dec.v===14,'rival patent decay');
   console.log('dava kuralları:',JSON.stringify(r));
   ok(!r.early&&!r.gap2&&r.gap3&&r.claimCap&&r.floor&&Math.abs(r.det4-0.6)<1e-9&&r.det9===0.8,'suit rules');
   console.log('ERRS',errs.length,JSON.stringify(errs.slice(0,3)));if(fail||errs.length)process.exitCode=1;await b.close();})();

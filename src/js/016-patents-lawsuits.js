@@ -25,7 +25,11 @@ const SUIT_GRACE=540,SUIT_GAP=3,SUIT_CAP=0.2;
 const SUIT_DETER=0.15,suitDeter=cat=>Math.min(0.8,SUIT_DETER*myPat(cat));
 /* rakibin talebi: aylık kategori cirosunun 2–4 katı, ama nakdinin en çok %20'si (en az 150K) */
 const suitClaim=cat=>Math.round(Math.min(Math.max(200000*infl(),catRev('P',cat)*rnd(2,4)),Math.max(150000*infl(),Math.max(0,G.cash)*SUIT_CAP)));
-function initPats(c){if(c.pats)return;c.pats={};for(const f of c.focus)c.pats[f]=Math.round(c.emp/180*c.tech);}
+/* rakip patent portföyü (v170): başlangıç çalışan/360 × teknoloji (eskiden /180), aylık artış 0,05 × teknoloji (eskiden 0,08) ve
+   rakip patentleri de eskir: her puan ayda ~1/144 ihtimalle düşer (oyuncununki gibi ~12 yıl). Eskiden portföyler sınırsız büyüyordu;
+   5 yılda 29 kişilik bir şirket bile 3 puana, büyükler 10–13 puana çıkıyordu ve koruyucu araştırma farkı kapatamıyordu. */
+const RV_PAT_INIT=360,RV_PAT_GROW=0.05,RV_PAT_LIFE=144;
+function initPats(c){if(c.pats)return;c.pats={};for(const f of c.focus)c.pats[f]=Math.round(c.emp/RV_PAT_INIT*c.tech);}
 /* dava riski (v168): sattığın (payı ≥%5) her kategoride sana dava açabilecek en önde rakip; gap = onların patent gücü − seninki (bekleyen başvurular sayılmaz).
    need: dava eşiğinin altına inmek için gereken patent gücü; res: o kategoriyi koruyan, önkoşulu hazır en ucuz araştırma. Patent panelinde ve botta kullanılır. */
 function suitRisks(){const out=[];
@@ -39,7 +43,8 @@ function filePatent(id,n,cats,w,free){
   G.patPend.push({id:nid(),src:id,n,cats,w,due:G.day+rint(120,240),ch:free?0.9:0.8});if(id)G.patFiled[id]=true;
 }
 function patMonthly(){
-  for(const c of liveComps()){initPats(c);for(const f of c.focus)if(Math.random()<0.08*c.tech*(c.profit>0?1:0.4))c.pats[f]=(c.pats[f]||0)+1;}
+  for(const c of liveComps()){initPats(c);for(const f of c.focus)if(Math.random()<RV_PAT_GROW*c.tech*(c.profit>0?1:0.4))c.pats[f]=(c.pats[f]||0)+1;
+    for(const f in c.pats)if(c.pats[f]>0&&Math.random()<c.pats[f]/RV_PAT_LIFE)c.pats[f]--;}
   for(const pp of [...G.patPend])if(G.day>=pp.due){G.patPend=G.patPend.filter(x=>x!==pp);
     if(Math.random()<pp.ch){G.pats.push({id:nid(),n:pp.n,cats:pp.cats,w:pp.w,grant:G.day,exp:G.day+12*365,src:pp.src});news((LANG_EN?`Patent granted: ${pp.n} (${pp.cats.map(c=>CATS[c].n).join(', ')}).`:`Patent onaylandı: ${pp.n} (${pp.cats.map(c=>CATS[c].n).join(', ')}).`),'good',true);}
     else{news((LANG_EN?`Patent application rejected: ${pp.n}. The patent office didn't find it original enough.`:`Patent başvurusu reddedildi: ${pp.n}. Patent ofisi yeterince özgün bulmadı.`),'bad');if(pp.src)delete G.patFiled[pp.src];}}
