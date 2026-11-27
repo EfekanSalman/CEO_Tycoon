@@ -1,13 +1,13 @@
 // Karşılaştırmalı bot ölçümü (v166, yeniden yazıldı). Aynı senaryo × tohum çiftleri iki kolda (A, B) koşar; her tohum kendi eşiyle karşılaştırılır.
 // Ortak rastgele sayılar botta varsayılan olarak açıktır (oyun her günü ve bölümlerini tohumdan yeniden tohumlar): kollar yalnızca kararlarla ayrışır.
 // node tools/bal/bench.js --a A.html [--b B.html] [--stratA base] [--stratB base,pat] [--offA rtd,..] [--offB ..]
-//   [--scen garage,chip,crisis,free] [--seeds 1-10] [--yrs 10] [--par 4] [--out klasör] [--nocrn] [--det]
+//   [--scen garage,chip,crisis]   (free varsayılan değil: garajla aynı başlangıç, hedefsiz; bot aynı oyunu oynar) [--seeds 1-10] [--yrs 10] [--par 4] [--out klasör] [--nocrn] [--det]
 // --det: belirlenimcilik denetimi (A kolunu iki kez koşturup sonuçları karşılaştırır).
 const {spawn}=require('child_process'),fs=require('fs'),path=require('path'),os=require('os');
 const A=process.argv.slice(2),opt=k=>{const i=A.indexOf('--'+k);return i<0?null:(A[i+1]&&!A[i+1].startsWith('--')?A[i+1]:true);};
 const R=path.join(__dirname,'../..'),FA=path.resolve(opt('a')||path.join(R,'index.html')),FB=path.resolve(opt('b')||FA);
 const STRAT=opt('strat')||'base',STRA=opt('stratA')||STRAT,STRB=opt('stratB')||STRAT;
-const SC=(opt('scen')||'garage,chip,crisis,free').split(','),YRS=+(opt('yrs')||10),PAR=+(opt('par')||4),DET=!!opt('det'),NOCRN=!!opt('nocrn');
+const SC=(opt('scen')||'garage,chip,crisis').split(','),YRS=+(opt('yrs')||10),PAR=+(opt('par')||4),DET=!!opt('det'),NOCRN=!!opt('nocrn');
 const SR=String(opt('seeds')||'1-10').split('-').map(Number),SEEDS=[];for(let s=SR[0];s<=(SR[1]||SR[0]);s++)SEEDS.push(s);
 const OFFA=typeof opt('offA')==='string'?opt('offA'):'',OFFB=typeof opt('offB')==='string'?opt('offB'):'';
 const OUT=path.resolve(opt('out')||path.join(os.tmpdir(),'sg-bench-'+Date.now()));fs.mkdirSync(OUT,{recursive:true});

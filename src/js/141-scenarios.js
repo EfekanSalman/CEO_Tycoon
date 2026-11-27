@@ -65,8 +65,9 @@ const SCN={
     goals:()=>[SCN_GOALS.eco(),SCN_GOALS.base(8.5e5)],
     setup(){G.name=(LANG_EN?"Halka Tech":'Halka Teknoloji');G.cash=6e6;G.equity=0.8;G.office=1;G.brand=10;scnRes('fw','os','mobile');G.rounds.seed={d:0,amt:6e6};
       for(const [r,sk] of [['soft',6],['soft',5],['soft',4.5],['design',5.5],['design',4.5],['hw',6],['hw',5],['res',5],['mkt',4.5]])scnHire(r,sk);}},
-  crisis:{id:'crisis',ver:3,n:(LANG_EN?"Crisis Years":'Kriz Yılları'),diff:4,yrs:5,d:(LANG_EN?"Parts cost 25% more, demand is 15% lower, rivals are aggressive and crises hit more often. Can you make it out of the garage?":'Parça fiyatları %25 pahalı, talep %15 düşük, rakipler saldırgan ve kriz olayları daha sık. Garajdan çıkabilecek misin?'),start:(LANG_EN?"$150K, founder, garage; tough economy":'$150K, kurucu, garaj; zor ekonomi'),
-    intro:(LANG_EN?"The economy is stagnant: parts are expensive, customers cautious, rivals ruthless. Stay afloat and reach a $1.25 billion valuation within five years.":'Ekonomi durgun: parçalar pahalı, müşteriler temkinli, rakipler acımasız. Ayakta kal ve beş yıl içinde $1,25 milyar değerlemeye ulaş.'),
+  /* v171: 5 → 6 yıl (ver 4). Bot ölçümünde zor ekonomi büyümeyi 1–2 yıl geciktiriyor: 50 koşunun hiçbiri 5 yılda $1,25 milyara ulaşmadı, 6 yılda %18'i, 7 yılda %50'si ulaştı. */
+  crisis:{id:'crisis',ver:4,n:(LANG_EN?"Crisis Years":'Kriz Yılları'),diff:4,yrs:6,d:(LANG_EN?"Parts cost 25% more, demand is 15% lower, rivals are aggressive and crises hit more often. Can you make it out of the garage?":'Parça fiyatları %25 pahalı, talep %15 düşük, rakipler saldırgan ve kriz olayları daha sık. Garajdan çıkabilecek misin?'),start:(LANG_EN?"$150K, founder, garage; tough economy":'$150K, kurucu, garaj; zor ekonomi'),
+    intro:(LANG_EN?"The economy is stagnant: parts are expensive, customers cautious, rivals ruthless. Stay afloat and reach a $1.25 billion valuation within six years.":'Ekonomi durgun: parçalar pahalı, müşteriler temkinli, rakipler acımasız. Ayakta kal ve altı yıl içinde $1,25 milyar değerlemeye ulaş.'),
     goals:()=>[SCN_GOALS.val(1.25e9)],
     setup(){G.mods={px:1.25,dem:0.85,ev:0.55,aggr:0.2};G.mac.ph='rec';G.mac.left=10;G.mac.log=[{ph:'rec',d:0}];G.mac.dem=0.9;G.mac.pe=0.8;for(const c in G.px)G.px[c]=1.25;for(const c of G.comps)c.aggr=Math.min(0.95,c.aggr+0.25);}},
 };

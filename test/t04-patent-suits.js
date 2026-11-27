@@ -30,6 +30,10 @@ const {open,startScn}=require('../tools/page');const SUIT_GAP_T=3;
   const dec=await pg.evaluate(()=>{const c=liveComps()[0],cat=c.focus[0];for(const x of liveComps()){initPats(x);x.tech=0;x.aggr=0;}c.pats={[cat]:20};const R0=Math.random,T0=window.triggerChoice;window.triggerChoice=()=>{};Math.random=()=>0.1;
     try{for(let i=0;i<12;i++)patMonthly();}finally{Math.random=R0;window.triggerChoice=T0;}return {v:c.pats[cat],consts:[RV_PAT_INIT,RV_PAT_GROW,RV_PAT_LIFE]};});
   console.log('rakip patent eskimesi:',JSON.stringify(dec));ok(dec.v===14,'rival patent decay');
+  // kopya davası talebi (v171): kategori cirosunun 3–5 katı, ama nakdin en çok %30'u (en az 300K)
+  const tc=await pg.evaluate(()=>{const cat=liveComps()[0].focus[0],I=infl();const p=G.products.find(x=>x.owner==='P'&&x.cat===cat)||G.products[G.products.push({id:nid(),owner:'P',cat,name:'T2',score:S(cat),price:100,unitCost:40,launch:G.day,active:true,units:20000,share:0.1,total:0,camp:0,sr:20000})-1];
+    p.active=true;p.units=p.sr=5e5;p.price=100;G.cash=4e6;const big=tdnClaim(cat);G.cash=1e5;const small=tdnClaim(cat);return {big,small,I};});
+  console.log('kopya davası talebi:',JSON.stringify(tc));ok(tc.big<=4e6*0.3+1&&tc.big>=3e5*tc.I-1&&Math.abs(tc.small-Math.round(3e5*tc.I))<=1,'copy suit cap');
   console.log('dava kuralları:',JSON.stringify(r));
   ok(!r.early&&!r.gap2&&r.gap3&&r.claimCap&&r.floor&&Math.abs(r.det4-0.6)<1e-9&&r.det9===0.8,'suit rules');
   console.log('ERRS',errs.length,JSON.stringify(errs.slice(0,3)));if(fail||errs.length)process.exitCode=1;await b.close();})();

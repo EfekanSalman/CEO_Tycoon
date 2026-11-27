@@ -44,11 +44,14 @@ function tdnFinish(j){const T=tdnOf(),p=prod(j.pid),c=comp(j.cid),A=TDN_AP[j.ap]
   news((LANG_EN?`${p.name} teardown complete: ${CATS[cat].n} products score +${tdnF(b*100)}% for 18 months${now.length?`, your ${now.length} products on the market +${tdnF(b*100)}% right away`:''}${rs.length?`, discount on ${rs.length} research items`:''}.`:`${p.name} sökümü tamamlandı: ${CATS[cat].n} ürünlerinde 18 ay puan +%${tdnF(b*100)}${now.length?`, piyasadaki ${now.length} ürün hemen +%${tdnF(b*100)}`:''}${rs.length?`, ${rs.length} araştırmada indirim`:''}.`),'good',true);}
 const tdnF=x=>fx(x,1);
 function tdnDaily(){const T=G.tdn;if(!T||!T.jobs.length)return;for(const j of T.jobs.slice())if(G.day>=j.end)tdnFinish(j);}
+/* kopya davasının talebi (v171): aylık kategori cirosunun 3–5 katı (en az 500K), ama nakdinin en çok %30'u (en az 300K). Normal patent davasından
+   (%20) ağır çünkü kopya kanıtı var; eskiden tavansızdı ve v166'da normal davalara konan sınır burada yoktu, genç şirketi tek davada batırabiliyordu. */
+const TDN_SUIT_CAP=0.3,tdnClaim=cat=>Math.round(Math.min(Math.max(5e5*infl(),catRev('P',cat)*rnd(3,5)),Math.max(3e5*infl(),Math.max(0,G.cash)*TDN_SUIT_CAP)));
 /* doğrudan kopyanın riski: rakip, sökümden sonra o kategoride çıkardığın ürünler için dava açabilir (ayda %3,5; bir kez) */
 function tdnMonthly(){const T=G.tdn;if(!T||!T.taint.length)return;T.taint=T.taint.filter(t=>G.day<t.until);
   for(const t of T.taint.slice()){const c=comp(t.cid);if(!c||c.dead){T.taint=T.taint.filter(x=>x!==t);continue;}
     if(G.pending||G.cases.some(k=>k.cid===t.cid))continue;const used=myActive(t.cat).some(p=>(p.launch||0)>=t.d||(p.updAt||0)>=t.d);
-    if(used&&Math.random()<0.035){T.taint=T.taint.filter(x=>x!==t);triggerChoice('suitIn',{cid:t.cid,cat:t.cat,claim:Math.round(Math.max(5e5*infl(),catRev('P',t.cat)*rnd(3,5)))});}}}
+    if(used&&Math.random()<0.035){T.taint=T.taint.filter(x=>x!==t);triggerChoice('suitIn',{cid:t.cid,cat:t.cat,claim:tdnClaim(t.cat)});}}}
 function tdnAct(a,ds){if(a==='tdnstart')tdnStart(+ds.id,ds.k);else if(a==='tdncat')UI.tdnCat=ds.k||null;}
 /* ---- görünüm ---- */
 function tdnRivalList(){const mine=new Set(myActive().map(p=>p.cat));return G.products.filter(p=>p.active&&p.owner!=='P'&&alive(p.owner)&&CATS[p.cat]);}
