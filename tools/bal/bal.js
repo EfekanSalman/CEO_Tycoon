@@ -3,7 +3,7 @@
 // Strateji bayrakları (virgülle): base (her zaman), pat (patent başvurusu), suitscan (sana açılan patent davasında seçenekleri kopyada ölç),
 //   patf (yalnızca yapılmış araştırmalara başvuru; araştırma sırasına dokunmaz), sue (rakibe patent davası),
 //   optxall (bütün kararlarda seçenekleri kopyada ölç, türden koşu başına en çok 6).
-// Çıktı: tek satır JSON {scnRes,val,cash,over,ns:{...}}.
+// Çıktı: tek satır JSON {scnRes,val,cash,over,ns:{...}}. DUMP=dosya.json: bitişteki oyun durumunu kayıt olarak yazar (ekran görüntüsü / test kaydı için).
 // Bot oyunun kararlarında oyunun kendi varsayılanını (evDefI: tahmin varsa en iyi tahmin, yoksa ayarlı varsayılan) seçer.
 const {open,startScn}=require('../page');const path=require('path');
 (async()=>{const [SID,STRAT,YRS,FILE]=[process.argv[2]||'garage',process.argv[3]||'base',+(process.argv[4]||10),process.argv[5]||path.join(__dirname,'../..','index.html')];
@@ -96,4 +96,5 @@ const {open,startScn}=require('../page');const path=require('path');
     NS.dbg={unl:CAT_ORDER.filter(c=>catUnlocked(c)),act:myActive().map(p=>p.cat),proj:G.projects.map(p=>p.cat),roles:[...new Set(G.emps.map(e=>e.role))],res:Object.keys(G.res.done).length};
     return {scnRes:G.scn?{end:G.scn.end,won:G.scn.won,fail:G.scn.fail,stars:G.scn.stars||0,got:G.scn.got}:null,val:valuation()/1e6,cash:G.cash,over:G.over?(G.exited?'çıkış: '+(G.exited.hostile?'düşmanca devralma':G.exited.by):'iflas'):'',equity:+(G.equity||0).toFixed(3),conf:G.life?Math.round(G.life.conf):null,day:G.day,ns:NS};
   },[SID,STRAT,YRS,SEED,process.env.OFF||'',!process.env.NOCRN]);
+  if(process.env.DUMP){const j=await pg.evaluate(()=>saveJSON());require('fs').writeFileSync(process.env.DUMP,j);}
   console.log(JSON.stringify(r));if(errs.length)console.log('ERRS',errs.slice(0,3));await b.close();})();

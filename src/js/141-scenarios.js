@@ -39,8 +39,10 @@ const SCN_GOALS={
 };
 const SCN={
   free:{id:'free',n:(LANG_EN?"Free Play":'Serbest Oyun'),diff:0,d:(LANG_EN?"No goals, no time limit. Start in the garage and grow however you like.":'Hedef yok, süre yok. Garajdan başla ve istediğin gibi büyü.'),start:(LANG_EN?"$150K, founder, garage":'$150K, kurucu, garaj')},
-  garage:{id:'garage',ver:4,n:(LANG_EN?"From Garage to the Top":'Garajdan Zirveye'),diff:1,yrs:10,d:(LANG_EN?"Classic start, clear goal: from a garage to a $4 billion public company.":'Klasik başlangıç, net hedef: bir garajdan 4 milyar dolarlık halka açık şirkete.'),start:(LANG_EN?"$150K, founder, garage":'$150K, kurucu, garaj'),
-    goals:()=>[SCN_GOALS.val(4e9),SCN_GOALS.pub()]},
+  /* v173: $4 milyar / 10 yıl → $1,5 milyar / 8 yıl (ver 5). Bot ölçümünde (238 koşu) 4 milyara ancak %30 ulaşıyordu, en erken 6,3. yılda;
+     ilk 5 yılda hiçbir koşu 1,8 milyarı geçmediği için 3 yıldız imkânsızdı. Kolay senaryo, zor Kriz'le aynı başarı oranındaydı. */
+  garage:{id:'garage',ver:5,n:(LANG_EN?"From Garage to the Top":'Garajdan Zirveye'),diff:1,yrs:8,d:(LANG_EN?"Classic start, clear goal: from a garage to a $1.5 billion public company.":'Klasik başlangıç, net hedef: bir garajdan 1,5 milyar dolarlık halka açık şirkete.'),start:(LANG_EN?"$150K, founder, garage":'$150K, kurucu, garaj'),
+    goals:()=>[SCN_GOALS.val(1.5e9),SCN_GOALS.pub()]},
   rescue:{id:'rescue',ver:3,n:(LANG_EN?"Rescue Operation":'Kurtarma Operasyonu'),diff:3,yrs:2.25,d:(LANG_EN?"The board put you in charge of a company on the brink of collapse. Products are dated, the team is demoralized, salaries are bloated and the bank is at the door.":'Yönetim kurulu seni batmak üzere olan bir şirketin başına getirdi. Ürünler eski, ekip moralsiz, maaşlar şişkin, banka kapıda.'),start:(LANG_EN?"$600K cash, $1.5M debt, a demoralized 11-person team, 2 outdated products":'$600K nakit, $1,5M borç, 11 kişilik moralsiz ekip, eskimiş 2 ürün'),
     intro:(LANG_EN?"You're the new CEO of Mira Software. There's $600K in the till and $1.5M owed to the bank. The products are outdated and the team is demoralized. First stop the bleeding, then take the company to a $150M valuation.":'Mira Yazılım\'ın yeni CEO\'susun. Kasada $600K var, bankaya $1,5M borç var. Ürünler eskidi ve ekip moralsiz. Önce kanamayı durdur, sonra şirketi $150M değerlemeye taşı.'),
     goals:()=>[SCN_GOALS.debt(1.5e6),SCN_GOALS.streak(9),SCN_GOALS.val(1.5e8)],
