@@ -1053,6 +1053,22 @@ body.bd-dragging{cursor:grabbing;user-select:none}
 @keyframes msIn2{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:none}}
 @media (max-width:520px){.lm-mid{flex-direction:column;align-items:stretch}.lm-gauge{margin:0 auto}}
 @media (prefers-reduced-motion:reduce){.lm-card.lm2,.lm-bar i{animation:none}}
+/* ---- Ar-Ge (v178) ---- */
+.rcard{border-left:4px solid var(--cc,var(--pt-res));transition:transform .15s,box-shadow .15s}
+.rcard:not(.done):hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(5,12,25,.08)}
+.rcard[data-g]::before{color:var(--cc,var(--pt-res))}
+.rc-n{display:flex;align-items:center;gap:8px;min-width:0}
+.rc-ic{flex:none;width:30px;height:30px;border-radius:8px;display:inline-grid;place-items:center;color:var(--cc,var(--pt-res));background:color-mix(in srgb,var(--cc,var(--pt-res)) 14%,transparent)}
+.rc-ic svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7}
+.rc-days{color:var(--muted)}
+.rc-un{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.rc-chip{font-size:11px;padding:1px 7px;border-radius:999px;background:var(--panel);border:1px solid var(--line)}
+.rhero{display:flex;gap:16px;align-items:center;padding:14px;border:1px solid var(--line);border-left:5px solid var(--cc);border-radius:12px;background:linear-gradient(90deg,color-mix(in srgb,var(--cc) 8%,var(--panel2)),var(--panel2))}
+.rhero .dring-t{font-size:16px}
+.rh-b{display:flex;flex-direction:column;gap:5px;min-width:0}
+.rh-n{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-size:19px}
+.rh-f{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+@media (max-width:520px){.rhero{flex-direction:column;align-items:flex-start}}
 </style>
 
 <header class="top" id="top">
@@ -13840,7 +13856,7 @@ function vRes(){
     else if(act)st=`<span class="chip r-res">${rp?'~'+Math.ceil((actRP()-a.p)/rp)+(LANG_EN?" days":' gün'):(LANG_EN?"No researchers":'Araştırmacı yok')}</span>`;
     else if(pre.length)st=(LANG_EN?`<span class="small muted">Requires: ${pre.map(x=>RESD[x].n).join(', ')}</span>`:`<span class="small muted">Önce: ${pre.map(x=>RESD[x].n).join(', ')}</span>`);
     else{const ef=resEarly(r);st=(LANG_EN?`<span class="num small">${money(resCostOf(r))} · ${num(resRP(r))} RP</span>${ef>1.01?`<div class="small warn">Technology not yet mature: cost ×${fx(ef,1)}. Back to normal in ${dateOf((RES_NODE[r.id]?NODE_ERA[RES_NODE[r.id]]:r.era)*365).getFullYear()}.</div>`:''}`:`<span class="num small">${money(resCostOf(r))} · ${num(resRP(r))} AP</span>${ef>1.01?`<div class="small warn">Teknoloji henüz olgun değil: maliyet ×${fx(ef,1)}. ${dateOf((RES_NODE[r.id]?NODE_ERA[RES_NODE[r.id]]:r.era)*365).getFullYear()} yılında normale döner.</div>`:''}`);btn=(LANG_EN?`<button class="btn sm ${a?'':'primary'}" data-act="research" data-rid="${r.id}" ${a?'disabled':''}>Start</button>`:`<button class="btn sm ${a?'':'primary'}" data-act="research" data-rid="${r.id}" ${a?'disabled':''}>Başlat</button>`);}
-    return `<div class="proj rcard${done?' done':''}${act?' act':''}"><div class="row between" style="gap:8px;align-items:flex-start"><b>${r.n}</b>${btn}</div><div class="small muted">${r.d}</div>${act?`<div class="bar res"><i style="width:${(a.p/actRP()*100).toFixed(1)}%"></i></div>`:''}<div>${st}</div></div>`;
+    return `<div class="proj rcard${done?' done':''}${act?' act':''}" style="--cc:${resCC(r)}"><div class="row between" style="gap:8px;align-items:flex-start"><span class="rc-n">${resIcon(r)}<b>${r.n}</b></span>${btn}</div><div class="small muted">${r.d}</div>${act?`<div class="bar res"><i style="width:${(a.p/actRP()*100).toFixed(1)}%"></i></div>`:''}<div>${st}</div>${resMeta(r,rp,done,act)}</div>`;
   };
   if(curSub('res')==='sokum')return subBar('res')+vTeardown();
   if(curSub('res')==='yz')return subBar('res')+vLab();
@@ -13853,11 +13869,9 @@ function vRes(){
   const fb=[['avail',(LANG_EN?"Available":'Başlatılabilir')],['lock',(LANG_EN?"Locked":'Kilitli')],['done',(LANG_EN?"Completed":'Tamamlanan')],['all',(LANG_EN?"All":'Tümü')]].map(([k,n])=>`<button class="btn sm ${F===k?'primary':''}" data-act="resf" data-k="${k}" aria-pressed="${F===k}">${n} <span class="num">${k==='all'?RES.length:cnt[k]}</span></button>`).join('');
   const actR=a?RESD[a.id]:null;
   const top=(LANG_EN?`<section class="panel"><div class="ph"><h2>Research</h2><span class="sub"><b class="num">${fx(rp,1)}</b> RP/day · ${cnt.done}/${RES.length} completed · one project at a time</span></div><div class="pb col" style="gap:12px">
-    ${actR?`<div class="res-now"><div class="row between" style="gap:10px"><span><span class="small muted">Now researching</span><br><b>${actR.n}</b></span><span class="chip r-res">${rp?'~'+Math.ceil((actRP()-a.p)/rp)+" days":"No researchers"}</span></div><div class="bar res" style="margin-top:8px"><i style="width:${(a.p/actRP()*100).toFixed(1)}%"></i></div></div>`
-      :rp?"<div class=\"res-now idle small\"><b>Research is idle.</b> Your researchers are generating points that go unused; start a technology below.</div>":"<div class=\"res-now idle small\">Hire a researcher in the Team section to do research.</div>"}
+    ${resHero(actR,a,rp)}
     <div class="row" style="gap:6px;flex-wrap:wrap" role="group" aria-label="Research filter">${fb}</div></div></section>`:`<section class="panel"><div class="ph"><h2>Araştırma</h2><span class="sub">günde <b class="num">${fx(rp,1)}</b> AP · ${cnt.done}/${RES.length} tamamlandı · aynı anda tek araştırma</span></div><div class="pb col" style="gap:12px">
-    ${actR?`<div class="res-now"><div class="row between" style="gap:10px"><span><span class="small muted">Şu an araştırılıyor</span><br><b>${actR.n}</b></span><span class="chip r-res">${rp?'~'+Math.ceil((actRP()-a.p)/rp)+' gün':'Araştırmacı yok'}</span></div><div class="bar res" style="margin-top:8px"><i style="width:${(a.p/actRP()*100).toFixed(1)}%"></i></div></div>`
-      :rp?'<div class="res-now idle small"><b>Araştırma boşta.</b> Araştırmacıların puan üretiyor ama kullanılmıyor; aşağıdan bir teknoloji başlat.</div>':'<div class="res-now idle small">Araştırma yapmak için Ekip bölümünden bir araştırmacı işe al.</div>'}
+    ${resHero(actR,a,rp)}
     <div class="row" style="gap:6px;flex-wrap:wrap" role="group" aria-label="Araştırma filtresi">${fb}</div></div></section>`);
   const body=F!=='all'?(()=>{const L=RES.filter(inF);return L.length?(LANG_EN?`<section class="panel"><div class="ph"><h2>${{avail:"Available research",lock:"Locked research",done:"Completed research"}[F]}</h2><span class="sub">${L.length} projects</span></div><div class="pb"><div class="rgrid">${L.map(r=>card(r).replace('<div class="proj rcard','<div data-g="'+r.g+'" class="proj rcard')).join('')}</div></div></section>`:`<section class="panel"><div class="ph"><h2>${{avail:'Başlatılabilir araştırmalar',lock:'Kilitli araştırmalar',done:'Tamamlanan araştırmalar'}[F]}</h2><span class="sub">${L.length} araştırma</span></div><div class="pb"><div class="rgrid">${L.map(r=>card(r).replace('<div class="proj rcard','<div data-g="'+r.g+'" class="proj rcard')).join('')}</div></div></section>`):'';})():groups.map(g=>{const L=RES.filter(r=>r.g===g&&inF(r));if(!L.length)return '';const all=RES.filter(r=>r.g===g);
     return `<section class="panel"><div class="ph"><h2>${g}</h2><span class="sub">${all.filter(r=>has(r.id)).length}/${all.length}</span></div><div class="pb"><div class="rgrid">${L.map(card).join('')}</div></div></section>`;}).join('');
@@ -14086,6 +14100,23 @@ function empAvatar(e,d=44){const id=Math.abs(+e.id||0),skin=SKINS[id%SKINS.lengt
   const hairP=st===0?'M14 21c0-7 4-11 10-11s10 4 10 11c-2-3-5-5-10-5s-8 2-10 5z':st===1?'M13 23c0-9 5-13 11-13s11 4 11 13v8c-1-3-1-6-2-9-3 0-8-2-10-5-2 3-5 5-8 5-1 3-1 6-2 9z':st===2?'M14 21c0-7 4-11 10-11s10 4 10 11c-2-3-5-5-10-5s-8 2-10 5zM20 9a4 4 0 1 1 8 0 4 4 0 1 1-8 0z':'M15 19c1-5 4-8 9-8s8 3 9 8c-3-2-6-2-9-2s-6 0-9 2z';
   const eyes=tired?'<path d="M18.5 24.5h3M26.5 24.5h3" stroke="#2B211C" stroke-width="1.6" stroke-linecap="round"/>':'<circle cx="20" cy="24.5" r="1.5" fill="#2B211C"/><circle cx="28" cy="24.5" r="1.5" fill="#2B211C"/>';
   return `<svg class="eav" viewBox="0 0 48 48" width="${d}" height="${d}" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="color-mix(in srgb,${cc} 18%,var(--panel))"/><clipPath id="eavc${id}"><circle cx="24" cy="24" r="24"/></clipPath><g clip-path="url(#eavc${id})"><path d="M8 50c1-10 7-15 16-15s15 5 16 15z" fill="${cc}"/><path d="M20 35l4 5 4-5" fill="none" stroke="#fff" stroke-width="1.4" opacity=".7"/></g><circle cx="24" cy="24" r="10.5" fill="${skin}"/><path d="${hairP}" fill="${hair}"/>${eyes}${gl?'<g fill="none" stroke="#1C1C1C" stroke-width="1.3"><circle cx="20" cy="24.5" r="3.2"/><circle cx="28" cy="24.5" r="3.2"/><path d="M23.2 24.5h1.6"/></g>':''}<path d="${mouth}" fill="none" stroke="#7A2E22" stroke-width="1.6" stroke-linecap="round"/>${e.founder?'<circle cx="39" cy="9" r="7" fill="var(--warn)" stroke="var(--panel)" stroke-width="2"/><path d="M39 5.2l1.2 2.5 2.7.4-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.4z" fill="#fff"/>':''}</svg>`;}
+/* ============================== VISUAL PAGES: AR-GE / PAZAR / FİNANS (v178) ============================== */
+const RES_IC='<svg viewBox="0 0 26 26"><path d="M10 3h6M11 3v7l-6 10a2 2 0 0 0 1.7 3h12.6a2 2 0 0 0 1.7-3l-6-10V3"/><path d="M8 16h10"/></svg>';
+const resCat=r=>(PAT_CAT[r.id]||[])[0]||null;
+const resCC=r=>{const c=resCat(r);return c?deskCC(c):'var(--pt-res)';};
+const resIcon=r=>{const c=resCat(r);return `<span class="rc-ic" aria-hidden="true">${c&&CAT_ICON[c]?CAT_ICON[c]:RES_IC}</span>`;};
+/* bu araştırmanın açtığı (önkoşulu olduğu) araştırmalar */
+const resUnlocks=r=>RES.filter(x=>(x.pre||[]).includes(r.id));
+function resMeta(r,rp,done,act){const u=resUnlocks(r),days=!done&&!act&&rp>0?Math.ceil(resRP(r)/rp):null;
+  return (days!=null?`<div class="small rc-days">${LANG_EN?'≈':'≈'} ${num(days)} ${LANG_EN?'days with your team':'gün (mevcut ekiple)'}</div>`:'')+(u.length?`<div class="rc-un"><span class="small muted">${LANG_EN?'Unlocks':'Açar'}:</span>${u.slice(0,4).map(x=>`<span class="rc-chip">${esc(x.n)}</span>`).join('')}${u.length>4?`<span class="small muted">+${u.length-4}</span>`:''}</div>`:'');}
+/* şu anki araştırma: büyük halka, kalan süre, ne açtığı */
+function resHero(actR,a,rp){
+  if(!actR)return rp?`<div class="res-now idle small">${LANG_EN?'<b>Research is idle.</b> Your researchers are generating points that go unused; start a technology below.':'<b>Araştırma boşta.</b> Araştırmacıların puan üretiyor ama kullanılmıyor; aşağıdan bir teknoloji başlat.'}</div>`:`<div class="res-now idle small">${LANG_EN?'Hire a researcher in the Team section to do research.':'Araştırma yapmak için Ekip bölümünden bir araştırmacı işe al.'}</div>`;
+  const f=a.p/actRP(),left=rp?Math.ceil((actRP()-a.p)/rp):null,u=resUnlocks(actR),cc=resCC(actR);
+  const long=left!=null&&left>720;
+  return `<div class="rhero" style="--cc:${cc}">${deskRing(f,cc,96,Math.round(f*100)+'%')}<div class="rh-b"><span class="small muted">${LANG_EN?'Now researching':'Şu an araştırılıyor'}</span><b class="rh-n">${resIcon(actR)}${esc(actR.n)}</b><span class="small">${esc(actR.d)}</span>
+    <div class="rh-f"><span class="chip ${long?'st-warn':'r-res'}">${left==null?(LANG_EN?'No researchers':'Araştırmacı yok'):'≈ '+num(left)+(LANG_EN?' days':' gün')}</span>${long?`<span class="small warn">${LANG_EN?'Very slow: hire more researchers or pick something cheaper.':'Çok yavaş: araştırmacı al ya da daha ucuz bir şey seç.'}</span>`:''}</div>
+    ${u.length?`<div class="rc-un"><span class="small muted">${LANG_EN?'Then unlocks':'Bitince açılır'}:</span>${u.slice(0,5).map(x=>`<span class="rc-chip">${esc(x.n)}</span>`).join('')}</div>`:''}</div></div>`;}
 /* ============================== OFFICE VIEW ============================== */
 const OFF_LAYOUT=[{W:7,H:6,f:'concrete'},{W:10,H:10,f:'wood'},{W:13,H:13,f:'wood'},{W:16,H:14,f:'carpet'},{W:18,H:14,f:'tile'}];
 const ROLE_ORDER=['soft','design','hw','res','mkt','ops','sup','sec'];

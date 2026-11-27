@@ -1046,3 +1046,19 @@ body.bd-dragging{cursor:grabbing;user-select:none}
 @keyframes msIn2{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:none}}
 @media (max-width:520px){.lm-mid{flex-direction:column;align-items:stretch}.lm-gauge{margin:0 auto}}
 @media (prefers-reduced-motion:reduce){.lm-card.lm2,.lm-bar i{animation:none}}
+/* ---- Ar-Ge (v178) ---- */
+.rcard{border-left:4px solid var(--cc,var(--pt-res));transition:transform .15s,box-shadow .15s}
+.rcard:not(.done):hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(5,12,25,.08)}
+.rcard[data-g]::before{color:var(--cc,var(--pt-res))}
+.rc-n{display:flex;align-items:center;gap:8px;min-width:0}
+.rc-ic{flex:none;width:30px;height:30px;border-radius:8px;display:inline-grid;place-items:center;color:var(--cc,var(--pt-res));background:color-mix(in srgb,var(--cc,var(--pt-res)) 14%,transparent)}
+.rc-ic svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7}
+.rc-days{color:var(--muted)}
+.rc-un{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.rc-chip{font-size:11px;padding:1px 7px;border-radius:999px;background:var(--panel);border:1px solid var(--line)}
+.rhero{display:flex;gap:16px;align-items:center;padding:14px;border:1px solid var(--line);border-left:5px solid var(--cc);border-radius:12px;background:linear-gradient(90deg,color-mix(in srgb,var(--cc) 8%,var(--panel2)),var(--panel2))}
+.rhero .dring-t{font-size:16px}
+.rh-b{display:flex;flex-direction:column;gap:5px;min-width:0}
+.rh-n{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-size:19px}
+.rh-f{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+@media (max-width:520px){.rhero{flex-direction:column;align-items:flex-start}}
