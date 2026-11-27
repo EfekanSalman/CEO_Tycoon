@@ -1015,6 +1015,24 @@ body.bd-dragging{cursor:grabbing;user-select:none}
 .ptab.pcards .pc-fresh::before{text-align:center}
 .ptab.pcards .tr-sp svg{width:100%;max-width:150px}
 @media (max-width:520px){.ptab.pcards tbody{grid-template-columns:1fr;padding:8px}.ptab.pcards tr{grid-template-columns:1fr 1fr auto}}
+/* ---- ekip kartları (v176): avatar, rol rengi, moral/enerji; Tablo düğmesiyle eski görünüm ---- */
+.ttab .tc-av{display:none}
+.ttab:not(.tcards) .tc-name{white-space:normal}
+.ttab.tcards,.ttab.tcards tbody{display:block}
+.ttab.tcards thead{display:none}
+.ttab.tcards tbody{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;padding:12px}
+.ttab.tcards tr{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-areas:"name name role" "lvl lvl sal" "skill mor en" "task task task" "acts acts acts";gap:10px 12px;padding:14px;border:1px solid var(--line);border-top:5px solid var(--cc);border-radius:12px;background:var(--panel);transition:transform .15s,box-shadow .15s}
+.ttab.tcards tr:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(5,12,25,.10)}
+.ttab.tcards td{display:block;padding:0;border:0;text-align:left;min-width:0}
+.ttab.tcards td[data-l]::before{content:attr(data-l);display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.ttab.tcards .tc-name{grid-area:name}.ttab.tcards .tc-role{grid-area:role;text-align:right}.ttab.tcards .tc-role::before{display:none!important}
+.ttab.tcards .tc-lvl{grid-area:lvl}.ttab.tcards .tc-sal{grid-area:sal;text-align:right}.ttab.tcards .tc-skill{grid-area:skill}.ttab.tcards .tc-mor{grid-area:mor}.ttab.tcards .tc-en{grid-area:en}
+.ttab.tcards .tc-task{grid-area:task}.ttab.tcards .tc-task select{width:100%}
+.ttab.tcards .tc-acts{grid-area:acts;border-top:1px solid var(--line);padding-top:10px}.ttab.tcards .tc-acts .row{justify-content:flex-start!important;flex-wrap:wrap!important;gap:6px}
+.ttab.tcards .tc-av{display:block;float:left;margin:0 10px 2px 0}
+.ttab.tcards .tc-name>b{font-family:var(--f-display);font-size:16px}
+.eav{display:block;border-radius:50%}
+@media (max-width:520px){.ttab.tcards tbody{grid-template-columns:1fr;padding:8px}}
 </style>
 
 <header class="top" id="top">
@@ -12585,6 +12603,7 @@ function act0(a,ds){
       spend(cost,'other');filePatent(r.id,r.n,PAT_CAT[r.id],patResW(r));news((LANG_EN?`Patent application filed: ${r.n}. Decision in 4-8 months.`:`Patent başvurusu yapıldı: ${r.n}. Karar 4-8 ay içinde.`));break;}
     case 'suenew':{const c=comp(ds.id)||liveComps().slice().sort((a,b)=>b.emp-a.emp)[0];if(!c)break;UI.sue={cid:c.id,cat:null,firm:'std'};if(ds.id){UI.tab='res';(UI.sub=UI.sub||{}).res='patent';UI.rival=null;window.scrollTo({top:0});}break;}
     case 'sueclose':UI.sue=null;break;
+    case 'teamview':PREF.teamView=ds.v==='table'?'table':'cards';prefSave();break;
     case 'prodview':PREF.prodView=ds.v==='table'?'table':'cards';prefSave();break;
     case 'suego':{const su=UI.sue,c=su&&comp(su.cid);if(!c||!su.cat||myPat(su.cat)<=0||crossWith(c.id)||G.cases.some(k=>k.cid===c.id))break;
       openCase(c.id,su.cat,'pl',su.firm);news((LANG_EN?`You filed a ${CATS[su.cat].n.toLocaleLowerCase(LOC)} patent lawsuit against ${c.name} (${LAW[su.firm].n}).`:`${c.name} aleyhine ${CATS[su.cat].n.toLocaleLowerCase(LOC)} patent davası açtın (${LAW[su.firm].n}).`),'mkt',true);UI.sue=null;break;}
@@ -12879,7 +12898,7 @@ function uiEnhance(root){
     const d=document.createElement('details');d.className='tip'+(el.classList.contains('pb')?' pb':'');el.classList.remove('pb');if(el.getAttribute('style'))d.setAttribute('style',el.getAttribute('style'));el.removeAttribute('style');
     const su=document.createElement('summary'),sp=document.createElement('span');sp.className='tip-s';sp.textContent=first;const mo=document.createElement('b');mo.className='tip-m';mo.textContent=(LANG_EN?"More":'Devamı');su.append(sp,' ',mo);
     el.replaceWith(d);d.append(su,el);}
-  let ti=0;for(const tb of root.querySelectorAll('table')){if(tb.classList.contains('pcards'))continue;/* kart görünümü kendi düzenini kurar (v175) */const ths=[...tb.querySelectorAll(':scope>thead>tr>th')];if(ths.length<5)continue;tb.classList.add('rt');ti++;
+  let ti=0;for(const tb of root.querySelectorAll('table')){if(tb.classList.contains('pcards')||tb.classList.contains('tcards'))continue;/* kart görünümü kendi düzenini kurar (v175) */const ths=[...tb.querySelectorAll(':scope>thead>tr>th')];if(ths.length<5)continue;tb.classList.add('rt');ti++;
     const L=ths.map(x=>x.textContent.trim());let ri=0;const rows=[...tb.querySelectorAll(':scope>tbody>tr')],tk=base+':t'+ti,cut=mob&&rows.length>10&&!(UI.rtAll&&UI.rtAll[tk]);
     if(cut){rows.slice(8).forEach(r=>r.classList.add('rt-cut'));const tr=document.createElement('tr');tr.className='rt-full rt-showall';const td=document.createElement('td');td.colSpan=ths.length;const b=document.createElement('button');b.className='btn sm';b.setAttribute('data-act','rtall');b.setAttribute('data-k',tk);b.textContent=(LANG_EN?`Show ${rows.length-8} more rows`:`${rows.length-8} satır daha göster`);td.appendChild(b);tr.appendChild(td);tb.querySelector(':scope>tbody').appendChild(tr);}
     for(const tr of rows){const tds=[...tr.children];ri++;if(tds.some(td=>td.colSpan>1)){tr.classList.add('rt-full');continue;}let di=0,nx=0;
@@ -13283,21 +13302,23 @@ function vTeam(){
   const roleTask={res:()=>G.res.active?RESD[G.res.active.id].n:(LANG_EN?"Research pending":'Araştırma bekliyor'),mkt:()=>(LANG_EN?"Brand awareness":'Marka bilinirliği'),ops:()=>(LANG_EN?"Supply & production efficiency":'Tedarik ve üretim verimliliği'),sup:()=>(LANG_EN?"Customer support":'Müşteri desteği'),sec:()=>(LANG_EN?"Cybersecurity":'Siber güvenlik')};
   const TPG=40,rf=UI.teamRole&&emps.some(e=>e.role===UI.teamRole)?UI.teamRole:'',list=rf?emps.filter(e=>e.role===rf):emps,lim=Math.max(TPG,UI.teamN||TPG),shown=list.slice(0,lim);
   const rows=shown.map(e=>{const ms=moraleState(e.morale),es=energyState(e.energy),under=!e.founder&&e.salary<marketSal(e)*0.95,pc=canPromote(e);
-    return (LANG_EN?`<tr><td><b>${esc(e.name)}</b><div class="row" style="gap:4px;margin-top:3px">${traitChips(e)}</div>${e.leave?`<div class="small warn">${LEAVE_N[e.leave.type]} · ${e.leave.until-G.day} days</div>`:''}</td><td><span class="chip r-${e.role}">${ROLES[e.role].n}</span></td>
-    <td><b class="small ${e.mgr?'r-'+e.role:''}">${levelTitle(e)}</b>${xpBar(e)}${pc.ok?`<button class="btn sm primary" data-act="promote" data-id="${e.id}" title="${esc(pc.why)}">Promote</button>`:''}</td>
-    <td><div class="skill"><div class="bar"><i style="width:${e.skill*10}%"></i></div><span class="num">${fx(e.skill,1)}</span></div></td>
-    <td class="r num">${e.founder?'—':money(e.salary)}${under?`<div class="small warn">market ${money(marketSal(e))}</div>`:''}</td>
-    <td>${meter(e.morale,ms)}<div class="small ${ms[1]}">${ms[0]}</div></td>
-    <td>${meter(e.energy,es)}<div class="small ${es[1]}">${es[0]}</div></td>
-    <td>${DEV_ROLES.includes(e.role)?`<select data-assign="${e.id}" aria-label="Assignment">${projOpts(e)}</select>`:`<span class="muted small">${roleTask[e.role]()}</span>`}</td>
-    <td class="r"><span class="row" style="justify-content:flex-end;flex-wrap:nowrap">${e.founder?'':`<button class="btn sm" data-act="raise" data-id="${e.id}" title="10% raise, morale +8">Raise</button>`}<button class="btn sm" data-act="vac" data-id="${e.id}" ${e.leave?'disabled':''} title="7-day vacation: energy refills, morale +5">Leave</button>${e.founder?'':`<button class="btn sm ghost" data-act="fire" data-id="${e.id}">Fire</button>`}</span></td></tr>`:`<tr><td><b>${esc(e.name)}</b><div class="row" style="gap:4px;margin-top:3px">${traitChips(e)}</div>${e.leave?`<div class="small warn">${LEAVE_N[e.leave.type]} · ${e.leave.until-G.day} gün</div>`:''}</td><td><span class="chip r-${e.role}">${ROLES[e.role].n}</span></td>
-    <td><b class="small ${e.mgr?'r-'+e.role:''}">${levelTitle(e)}</b>${xpBar(e)}${pc.ok?`<button class="btn sm primary" data-act="promote" data-id="${e.id}" title="${esc(pc.why)}">Terfi et</button>`:''}</td>
-    <td><div class="skill"><div class="bar"><i style="width:${e.skill*10}%"></i></div><span class="num">${fx(e.skill,1)}</span></div></td>
-    <td class="r num">${e.founder?'—':money(e.salary)}${under?`<div class="small warn">piyasa ${money(marketSal(e))}</div>`:''}</td>
-    <td>${meter(e.morale,ms)}<div class="small ${ms[1]}">${ms[0]}</div></td>
-    <td>${meter(e.energy,es)}<div class="small ${es[1]}">${es[0]}</div></td>
-    <td>${DEV_ROLES.includes(e.role)?`<select data-assign="${e.id}" aria-label="Görev">${projOpts(e)}</select>`:`<span class="muted small">${roleTask[e.role]()}</span>`}</td>
-    <td class="r"><span class="row" style="justify-content:flex-end;flex-wrap:nowrap">${e.founder?'':`<button class="btn sm" data-act="raise" data-id="${e.id}" title="Maaşa %10 zam, moral +8">Zam</button>`}<button class="btn sm" data-act="vac" data-id="${e.id}" ${e.leave?'disabled':''} title="7 gün tatil: enerji dolar, moral +5">İzin</button>${e.founder?'':`<button class="btn sm ghost" data-act="fire" data-id="${e.id}">Çıkar</button>`}</span></td></tr>`);}).join('');
+    return (LANG_EN?`<tr style="--cc:${roleCC(e.role)}"><td class="tc-name"><span class="tc-av">${empAvatar(e,48)}</span><b>${esc(e.name)}</b><div class="row" style="gap:4px;margin-top:3px">${traitChips(e)}</div>${e.leave?`<div class="small warn">${LEAVE_N[e.leave.type]} · ${e.leave.until-G.day} days</div>`:''}</td>
+    <td class="tc-role" data-l="Role"><span class="chip r-${e.role}">${ROLES[e.role].n}</span></td>
+    <td class="tc-lvl" data-l="Level"><b class="small ${e.mgr?'r-'+e.role:''}">${levelTitle(e)}</b>${xpBar(e)}${pc.ok?`<button class="btn sm primary" data-act="promote" data-id="${e.id}" title="${esc(pc.why)}">Promote</button>`:''}</td>
+    <td class="tc-skill" data-l="Skill"><div class="skill"><div class="bar"><i style="width:${e.skill*10}%"></i></div><span class="num">${fx(e.skill,1)}</span></div></td>
+    <td class="r num tc-sal" data-l="Salary">${e.founder?'—':money(e.salary)}${under?`<div class="small warn">market ${money(marketSal(e))}</div>`:''}</td>
+    <td class="tc-mor" data-l="Morale">${meter(e.morale,ms)}<div class="small ${ms[1]}">${ms[0]}</div></td>
+    <td class="tc-en" data-l="Energy">${meter(e.energy,es)}<div class="small ${es[1]}">${es[0]}</div></td>
+    <td class="tc-task" data-l="Task">${DEV_ROLES.includes(e.role)?`<select data-assign="${e.id}" aria-label="Assignment">${projOpts(e)}</select>`:`<span class="muted small">${roleTask[e.role]()}</span>`}</td>
+    <td class="r tc-acts"><span class="row" style="justify-content:flex-end;flex-wrap:nowrap">${e.founder?'':`<button class="btn sm" data-act="raise" data-id="${e.id}" title="10% raise, morale +8">Raise</button>`}<button class="btn sm" data-act="vac" data-id="${e.id}" ${e.leave?'disabled':''} title="7-day vacation: energy refills, morale +5">Leave</button>${e.founder?'':`<button class="btn sm ghost" data-act="fire" data-id="${e.id}">Fire</button>`}</span></td></tr>`:`<tr style="--cc:${roleCC(e.role)}"><td class="tc-name"><span class="tc-av">${empAvatar(e,48)}</span><b>${esc(e.name)}</b><div class="row" style="gap:4px;margin-top:3px">${traitChips(e)}</div>${e.leave?`<div class="small warn">${LEAVE_N[e.leave.type]} · ${e.leave.until-G.day} gün</div>`:''}</td>
+    <td class="tc-role" data-l="Rol"><span class="chip r-${e.role}">${ROLES[e.role].n}</span></td>
+    <td class="tc-lvl" data-l="Kademe"><b class="small ${e.mgr?'r-'+e.role:''}">${levelTitle(e)}</b>${xpBar(e)}${pc.ok?`<button class="btn sm primary" data-act="promote" data-id="${e.id}" title="${esc(pc.why)}">Terfi et</button>`:''}</td>
+    <td class="tc-skill" data-l="Yetenek"><div class="skill"><div class="bar"><i style="width:${e.skill*10}%"></i></div><span class="num">${fx(e.skill,1)}</span></div></td>
+    <td class="r num tc-sal" data-l="Maaş">${e.founder?'—':money(e.salary)}${under?`<div class="small warn">piyasa ${money(marketSal(e))}</div>`:''}</td>
+    <td class="tc-mor" data-l="Moral">${meter(e.morale,ms)}<div class="small ${ms[1]}">${ms[0]}</div></td>
+    <td class="tc-en" data-l="Enerji">${meter(e.energy,es)}<div class="small ${es[1]}">${es[0]}</div></td>
+    <td class="tc-task" data-l="Görev">${DEV_ROLES.includes(e.role)?`<select data-assign="${e.id}" aria-label="Görev">${projOpts(e)}</select>`:`<span class="muted small">${roleTask[e.role]()}</span>`}</td>
+    <td class="r tc-acts"><span class="row" style="justify-content:flex-end;flex-wrap:nowrap">${e.founder?'':`<button class="btn sm" data-act="raise" data-id="${e.id}" title="Maaşa %10 zam, moral +8">Zam</button>`}<button class="btn sm" data-act="vac" data-id="${e.id}" ${e.leave?'disabled':''} title="7 gün tatil: enerji dolar, moral +5">İzin</button>${e.founder?'':`<button class="btn sm ghost" data-act="fire" data-id="${e.id}">Çıkar</button>`}</span></td></tr>`);}).join('');
   const cands=G.cands.map(c=>(LANG_EN?`<div class="proj"><div class="row between"><b>${esc(c.name)}</b><span class="chip r-${c.role}">${ROLES[c.role].n}</span></div><span class="small muted">${LEVELS[c.level||0]}${c.hh?` · <span class="warn">from ${esc(c.hh)}, ${Math.max(0,c.hhUntil-G.day)} days</span>`:''}</span><div class="row" style="gap:4px">${traitChips(c)}</div>
     <div class="skill"><div class="bar" style="flex:1"><i style="width:${c.skill*10}%"></i></div><span class="num">${fx(c.skill,1)}</span></div>
     <div class="row between"><span class="num small">${money(c.salary)}/mo</span><button class="btn sm primary" data-act="hire" data-id="${c.id}" ${emps.length>=officeCap()?'disabled':''}>Hire</button></div></div>`:`<div class="proj"><div class="row between"><b>${esc(c.name)}</b><span class="chip r-${c.role}">${ROLES[c.role].n}</span></div><span class="small muted">${LEVELS[c.level||0]}${c.hh?` · <span class="warn">${esc(c.hh)} şirketinden, ${Math.max(0,c.hhUntil-G.day)} gün</span>`:''}</span><div class="row" style="gap:4px">${traitChips(c)}</div>
@@ -13339,16 +13360,16 @@ function vTeam(){
 `);
   const sub=curSub('team');if(sub==='mezun')return subBar('team')+vSpinoffs();if(sub==='yz')return subBar('team')+vAiw();if(sub==='kultur')return subBar('team')+vCulture();
   if(sub==='ortam')return subBar('team')+vWork()+envSec;if(sub==='yonetim')return subBar('team')+vMgmt();if(sub==='egitim')return subBar('team')+vTraining();if(sub==='sendika')return subBar('team')+vUnion();if(sub==='ust')return subBar('team')+vExecs();if(sub==='yetenek')return subBar('team')+vTalent();if(sub==='fikir')return subBar('team')+vIdeas();if(sub==='devralma')return subBar('team')+(vAcq()||(LANG_EN?"<div class=\"empty\">No acquired teams.</div>":'<div class="empty">Devralınan ekip yok.</div>'));
-  return subBar('team')+(LANG_EN?`<section class="panel"><div class="ph"><h2>Team</h2><span class="sub">${emps.length}/${officeCap()} people · ${off.n} · salaries ${money(emps.reduce((a,e)=>a+e.salary,0))}/mo</span></div>
+  return subBar('team')+(LANG_EN?`<section class="panel"><div class="ph"><h2>Team</h2><span class="seg pview" role="group" aria-label="View"><button class="btn sm ${PREF.teamView==='table'?'ghost':'primary'}" data-act="teamview" data-v="cards" aria-pressed="${PREF.teamView!=='table'}">Cards</button><button class="btn sm ${PREF.teamView==='table'?'primary':'ghost'}" data-act="teamview" data-v="table" aria-pressed="${PREF.teamView==='table'}">Table</button></span><span class="sub">${emps.length}/${officeCap()} people · ${off.n} · salaries ${money(emps.reduce((a,e)=>a+e.salary,0))}/mo</span></div>
     ${emps.length>TPG?`<div class="pb row tm-f" style="gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line)"><button class="btn sm ${rf?'':'primary'}" data-act="teamrole" data-k="" aria-pressed="${!rf}">All · ${emps.length}</button>${Object.keys(ROLES).filter(r=>emps.some(e=>e.role===r)).map(r=>`<button class="btn sm ${rf===r?'primary':''}" data-act="teamrole" data-k="${r}" aria-pressed="${rf===r}">${esc(ROLES[r].n)} · ${emps.filter(e=>e.role===r).length}</button>`).join('')}</div>`:''}
-    <div class="tw"><table><thead><tr><th>Name</th><th>Role</th><th>Level</th><th>Skill</th><th class="r">Salary</th><th>Morale</th><th>Energy</th><th>Task</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="tw"><table class="ttab${PREF.teamView==='table'?'':' tcards'}"><thead><tr><th>Name</th><th>Role</th><th>Level</th><th>Skill</th><th class="r">Salary</th><th>Morale</th><th>Energy</th><th>Task</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
     ${list.length>shown.length?`<div class="pb row" style="gap:8px;border-top:1px solid var(--line)"><span class="small muted">Showing ${shown.length}/${list.length} people</span><button class="btn sm" data-act="teammore">Show ${Math.min(TPG,list.length-shown.length)} more</button><button class="btn sm ghost" data-act="teammore" data-k="all">Show all</button></div>`:''}
     <div class="pb small muted" style="border-top:1px solid var(--line)">Market salary rises with skill; employees who don't get raises gradually lose morale. Employees whose morale stays below 30 may quit. Employees who run out of energy take burnout leave.</div></section>
   <section class="panel"><div class="ph"><h2>Candidates</h2><span class="row"><span class="sub">Refreshed monthly</span><button class="btn sm" data-act="refresh">Post new listing ($2,000)</button></span></div>
     <div class="pb"><p class="small muted" style="margin-bottom:12px">Developers, designers, and hardware engineers produce work points on projects. Researchers unlock technologies, and marketers grow your brand. Operations specialists shorten supply lead times and cut factory defect rates and construction time.</p>
-    <div class="grid3">${cands}</div></div></section>`:`<section class="panel"><div class="ph"><h2>Ekip</h2><span class="sub">${emps.length}/${officeCap()} kişi · ${off.n} · maaşlar ${money(emps.reduce((a,e)=>a+e.salary,0))}/ay</span></div>
+    <div class="grid3">${cands}</div></div></section>`:`<section class="panel"><div class="ph"><h2>Ekip</h2><span class="seg pview" role="group" aria-label="Görünüm"><button class="btn sm ${PREF.teamView==='table'?'ghost':'primary'}" data-act="teamview" data-v="cards" aria-pressed="${PREF.teamView!=='table'}">Kart</button><button class="btn sm ${PREF.teamView==='table'?'primary':'ghost'}" data-act="teamview" data-v="table" aria-pressed="${PREF.teamView==='table'}">Tablo</button></span><span class="sub">${emps.length}/${officeCap()} kişi · ${off.n} · maaşlar ${money(emps.reduce((a,e)=>a+e.salary,0))}/ay</span></div>
     ${emps.length>TPG?`<div class="pb row tm-f" style="gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line)"><button class="btn sm ${rf?'':'primary'}" data-act="teamrole" data-k="" aria-pressed="${!rf}">Hepsi · ${emps.length}</button>${Object.keys(ROLES).filter(r=>emps.some(e=>e.role===r)).map(r=>`<button class="btn sm ${rf===r?'primary':''}" data-act="teamrole" data-k="${r}" aria-pressed="${rf===r}">${esc(ROLES[r].n)} · ${emps.filter(e=>e.role===r).length}</button>`).join('')}</div>`:''}
-    <div class="tw"><table><thead><tr><th>Ad</th><th>Rol</th><th>Kademe</th><th>Yetenek</th><th class="r">Maaş</th><th>Moral</th><th>Enerji</th><th>Görev</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="tw"><table class="ttab${PREF.teamView==='table'?'':' tcards'}"><thead><tr><th>Ad</th><th>Rol</th><th>Kademe</th><th>Yetenek</th><th class="r">Maaş</th><th>Moral</th><th>Enerji</th><th>Görev</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
     ${list.length>shown.length?`<div class="pb row" style="gap:8px;border-top:1px solid var(--line)"><span class="small muted">${shown.length}/${list.length} kişi gösteriliyor</span><button class="btn sm" data-act="teammore">${Math.min(TPG,list.length-shown.length)} kişi daha göster</button><button class="btn sm ghost" data-act="teammore" data-k="all">Hepsini göster</button></div>`:''}
     <div class="pb small muted" style="border-top:1px solid var(--line)">Yetenek arttıkça piyasa maaşı yükselir; zam almayan çalışanın morali zamanla düşer. Morali 30'un altında kalan çalışan istifa edebilir. Enerjisi biten çalışan tükenmişlik izni alır.</div></section>
   <section class="panel"><div class="ph"><h2>Adaylar</h2><span class="row"><span class="sub">Her ay yenilenir</span><button class="btn sm" data-act="refresh">Yeni ilan ver ($2.000)</button></span></div>
@@ -14020,6 +14041,16 @@ function deskProdCards(mine){if(!mine.length)return '';
     return `<div class="dpc" style="--cc:${deskCC(p.cat)}"><div class="dpc-ic" aria-hidden="true">${CAT_ICON[p.cat]||''}</div><div class="dpc-b"><b class="dpc-n">${esc(p.name)}</b><span class="small muted">${CATS[p.cat].n}</span>
       <div class="dpc-m"><span title="${LANG_EN?'Market share':'Pazar payı'}"><b class="num">${pct(p.share,1)}</b> ${LANG_EN?'share':'pay'}</span><span class="num ${mp<0?'neg':'pos'}">${mp<0?'':'+'}${money(mp)}${LANG_EN?'/mo':'/ay'}</span></div></div>
       <div class="dpc-r" title="${LANG_EN?'Freshness':'Güncellik'} ${pct(v,0)}">${deskRing(Math.min(1,v),fc,46,Math.round(Math.min(1.5,v)*100)+'')}</div></div>`;}).join('')}</div>`;}
+/* ---- çalışan avatarı (v176): ofisteki karakterle aynı renkler (gömlek = rol, ten ve saç = kimlik numarası);
+   saç biçimi ve gözlük kimlikten, ağız moralden (mutlu / normal / mutsuz), yorgunken göz kapakları düşük. ---- */
+const ROLE_CV={soft:'--pt-soft',design:'--pt-design',hw:'--pt-hw',res:'--pt-res',mkt:'--pt-mkt',ops:'--pt-ops',sup:'--pt-sup',sec:'--pt-sec'};
+const roleCC=r=>`var(${ROLE_CV[r]||'--ch1'})`;
+function empAvatar(e,d=44){const id=Math.abs(+e.id||0),skin=SKINS[id%SKINS.length],hair=HAIRS[(id*7)%HAIRS.length],st=id%4,gl=id%5===2,cc=roleCC(e.role);
+  const mo=e.morale==null?70:e.morale,tired=(e.energy==null?80:e.energy)<35;
+  const mouth=mo>=65?'M19 31q5 4 10 0':mo>=40?'M19.5 31.5h9':'M19 33q5-4 10 0';
+  const hairP=st===0?'M14 21c0-7 4-11 10-11s10 4 10 11c-2-3-5-5-10-5s-8 2-10 5z':st===1?'M13 23c0-9 5-13 11-13s11 4 11 13v8c-1-3-1-6-2-9-3 0-8-2-10-5-2 3-5 5-8 5-1 3-1 6-2 9z':st===2?'M14 21c0-7 4-11 10-11s10 4 10 11c-2-3-5-5-10-5s-8 2-10 5zM20 9a4 4 0 1 1 8 0 4 4 0 1 1-8 0z':'M15 19c1-5 4-8 9-8s8 3 9 8c-3-2-6-2-9-2s-6 0-9 2z';
+  const eyes=tired?'<path d="M18.5 24.5h3M26.5 24.5h3" stroke="#2B211C" stroke-width="1.6" stroke-linecap="round"/>':'<circle cx="20" cy="24.5" r="1.5" fill="#2B211C"/><circle cx="28" cy="24.5" r="1.5" fill="#2B211C"/>';
+  return `<svg class="eav" viewBox="0 0 48 48" width="${d}" height="${d}" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="color-mix(in srgb,${cc} 18%,var(--panel))"/><clipPath id="eavc${id}"><circle cx="24" cy="24" r="24"/></clipPath><g clip-path="url(#eavc${id})"><path d="M8 50c1-10 7-15 16-15s15 5 16 15z" fill="${cc}"/><path d="M20 35l4 5 4-5" fill="none" stroke="#fff" stroke-width="1.4" opacity=".7"/></g><circle cx="24" cy="24" r="10.5" fill="${skin}"/><path d="${hairP}" fill="${hair}"/>${eyes}${gl?'<g fill="none" stroke="#1C1C1C" stroke-width="1.3"><circle cx="20" cy="24.5" r="3.2"/><circle cx="28" cy="24.5" r="3.2"/><path d="M23.2 24.5h1.6"/></g>':''}<path d="${mouth}" fill="none" stroke="#7A2E22" stroke-width="1.6" stroke-linecap="round"/>${e.founder?'<circle cx="39" cy="9" r="7" fill="var(--warn)" stroke="var(--panel)" stroke-width="2"/><path d="M39 5.2l1.2 2.5 2.7.4-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.4z" fill="#fff"/>':''}</svg>`;}
 /* ============================== OFFICE VIEW ============================== */
 const OFF_LAYOUT=[{W:7,H:6,f:'concrete'},{W:10,H:10,f:'wood'},{W:13,H:13,f:'wood'},{W:16,H:14,f:'carpet'},{W:18,H:14,f:'tile'}];
 const ROLE_ORDER=['soft','design','hw','res','mkt','ops','sup','sec'];
@@ -15328,7 +15359,7 @@ document.addEventListener('keydown',e=>{
 
 /* ============================== ERROR GUARD ============================== */
 /* Beklenmeyen bir hata oyunu sessizce dondurmasın: oyunu duraklat, durumu kurtarma anahtarına yaz, oyuncuya seçenek ve kopyalanabilir rapor sun. */
-const VER='v175',RESCUE_KEY='silikon-garaj-rescue';
+const VER='v176',RESCUE_KEY='silikon-garaj-rescue';
 const ERR={list:[],open:false,lastRescue:0,quiet:false};
 function errKey(e){const m=(e&&e.message)||String(e),f=((e&&e.stack)||'').split('\n').find(l=>/at /.test(l))||'';return m+'|'+f.trim();}
 function errCatch(src,e,pause=true){

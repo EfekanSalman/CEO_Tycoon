@@ -1008,3 +1008,21 @@ body.bd-dragging{cursor:grabbing;user-select:none}
 .ptab.pcards .pc-fresh::before{text-align:center}
 .ptab.pcards .tr-sp svg{width:100%;max-width:150px}
 @media (max-width:520px){.ptab.pcards tbody{grid-template-columns:1fr;padding:8px}.ptab.pcards tr{grid-template-columns:1fr 1fr auto}}
+/* ---- ekip kartları (v176): avatar, rol rengi, moral/enerji; Tablo düğmesiyle eski görünüm ---- */
+.ttab .tc-av{display:none}
+.ttab:not(.tcards) .tc-name{white-space:normal}
+.ttab.tcards,.ttab.tcards tbody{display:block}
+.ttab.tcards thead{display:none}
+.ttab.tcards tbody{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;padding:12px}
+.ttab.tcards tr{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-areas:"name name role" "lvl lvl sal" "skill mor en" "task task task" "acts acts acts";gap:10px 12px;padding:14px;border:1px solid var(--line);border-top:5px solid var(--cc);border-radius:12px;background:var(--panel);transition:transform .15s,box-shadow .15s}
+.ttab.tcards tr:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(5,12,25,.10)}
+.ttab.tcards td{display:block;padding:0;border:0;text-align:left;min-width:0}
+.ttab.tcards td[data-l]::before{content:attr(data-l);display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.ttab.tcards .tc-name{grid-area:name}.ttab.tcards .tc-role{grid-area:role;text-align:right}.ttab.tcards .tc-role::before{display:none!important}
+.ttab.tcards .tc-lvl{grid-area:lvl}.ttab.tcards .tc-sal{grid-area:sal;text-align:right}.ttab.tcards .tc-skill{grid-area:skill}.ttab.tcards .tc-mor{grid-area:mor}.ttab.tcards .tc-en{grid-area:en}
+.ttab.tcards .tc-task{grid-area:task}.ttab.tcards .tc-task select{width:100%}
+.ttab.tcards .tc-acts{grid-area:acts;border-top:1px solid var(--line);padding-top:10px}.ttab.tcards .tc-acts .row{justify-content:flex-start!important;flex-wrap:wrap!important;gap:6px}
+.ttab.tcards .tc-av{display:block;float:left;margin:0 10px 2px 0}
+.ttab.tcards .tc-name>b{font-family:var(--f-display);font-size:16px}
+.eav{display:block;border-radius:50%}
+@media (max-width:520px){.ttab.tcards tbody{grid-template-columns:1fr;padding:8px}}

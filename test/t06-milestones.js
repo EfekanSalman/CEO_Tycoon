@@ -16,6 +16,11 @@ const {open,startScn}=require('../tools/page');
     act('prodview',{v:'table'});render();const t1=q()&&!q().classList.contains('pcards')&&PREF.prodView==='table';act('prodview',{v:'cards'});render();const c2=q()&&q().classList.contains('pcards');
     const card=document.querySelector('table.ptab.pcards tr');const cs=card&&getComputedStyle(card).display;return {c0,t1,c2,cs};});
   console.log('ürün görünümü:',JSON.stringify(pv));ok(pv.c0&&pv.t1&&pv.c2&&pv.cs==='grid','product view toggle');
+  // ekip sayfası (v176): kart görünümünde her çalışanın avatarı var; Tablo düğmesi eski tabloya döner
+  const tv=await pg.evaluate(()=>{UI.tab='team';delete PREF.teamView;render();const q=()=>document.querySelector('table.ttab');const c0=q()&&q().classList.contains('tcards');
+    const av=document.querySelectorAll('table.ttab.tcards .tc-av svg.eav').length,n=G.emps.length;act('teamview',{v:'table'});render();const t1=q()&&!q().classList.contains('tcards');act('teamview',{v:'cards'});render();
+    return {c0,av,n,t1};});
+  console.log('ekip görünümü:',JSON.stringify(tv));ok(tv.c0&&tv.t1&&tv.av>=1,'team view toggle');
   console.log('kilometre taşları:',JSON.stringify(r));
   ok(r.silent,'silent first');ok(r.queuedWhilePaused,'queued while paused');ok(r.shown,'card shown');ok(r.once,'only once');
   console.log('ERRS',errs.length,JSON.stringify(errs.slice(0,3)));if(fail||errs.length)process.exitCode=1;await b.close();})();
