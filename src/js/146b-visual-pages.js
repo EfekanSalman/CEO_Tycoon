@@ -15,3 +15,11 @@ function resHero(actR,a,rp){
   return `<div class="rhero" style="--cc:${cc}">${deskRing(f,cc,96,Math.round(f*100)+'%')}<div class="rh-b"><span class="small muted">${LANG_EN?'Now researching':'Şu an araştırılıyor'}</span><b class="rh-n">${resIcon(actR)}${esc(actR.n)}</b><span class="small">${esc(actR.d)}</span>
     <div class="rh-f"><span class="chip ${long?'st-warn':'r-res'}">${left==null?(LANG_EN?'No researchers':'Araştırmacı yok'):'≈ '+num(left)+(LANG_EN?' days':' gün')}</span>${long?`<span class="small warn">${LANG_EN?'Very slow: hire more researchers or pick something cheaper.':'Çok yavaş: araştırmacı al ya da daha ucuz bir şey seç.'}</span>`:''}</div>
     ${u.length?`<div class="rc-un"><span class="small muted">${LANG_EN?'Then unlocks':'Bitince açılır'}:</span>${u.slice(0,5).map(x=>`<span class="rc-chip">${esc(x.n)}</span>`).join('')}</div>`:''}</div></div>`;}
+/* ---- Pazar: değer ligi (sen + rakipler, yatay çubuklar) ---- */
+function marketLeague(){const live=liveComps(),me={id:'P',name:G.name,v:valuation()};
+  const L=[me,...live.map(c=>({id:c.id,name:c.name,v:compVal(c)}))].sort((a,b)=>b.v-a.v),mx=Math.max(1,L[0].v),myR=L.findIndex(x=>x.id==='P')+1;
+  const show=L.slice(0,10);if(myR>10)show.push(me);
+  return `<section class="panel"><div class="ph"><h2>${LANG_EN?'Value league':'Değer ligi'}</h2><span class="sub">${LANG_EN?`You are #${myR} of ${L.length}`:`${L.length} şirket içinde ${myR}. sıradasın`}</span></div><div class="pb"><div class="mleague">${show.map(x=>{const rank=L.indexOf(x)+1,me2=x.id==='P';
+    return `<div class="ml-row${me2?' me':''}"><span class="ml-r num">${rank}</span><span class="ml-n">${me2?`<b>${esc(x.name)}</b> <span class="chip st-ok">${LANG_EN?'you':'sen'}</span>`:esc(x.name)}</span><span class="ml-bar"><i style="width:${Math.max(1.5,x.v/mx*100).toFixed(1)}%;background:${ownerColor(x.id)}"></i></span><span class="ml-v num">${money(x.v)}</span></div>`;}).join('')}</div></div></section>`;}
+/* kategoride oyuncunun sırası */
+function mkMyRank(cat){const by={};for(const p of G.products)if(p.active&&p.cat===cat)by[p.owner]=(by[p.owner]||0)+p.share;const L=Object.entries(by).sort((a,b)=>b[1]-a[1]);const i=L.findIndex(x=>x[0]==='P');return i<0?null:{r:i+1,n:L.length};}
