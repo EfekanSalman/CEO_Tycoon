@@ -23,6 +23,10 @@ const {open,startScn}=require('../page');const path=require('path');
       for(let i=0;i<n;i++){const g=wiClone(G);const S=wiEnter(g);try{Math.random=wiSeeded(seed);const P2=G.pending;E.pick(P2.d,i);G.pending=null;for(let k=0;k<H&&!G.over;k++){step();G.pending=null;}out.push({cash:Math.round(G.cash),val:Math.round(valuation()),over:!!G.over});}catch(e){out.push(null);}finally{wiExit(S);}}return out;};
     // dava sonuçlarını say (rol: pl = sen açtın, def = sana açıldı)
     {const RC0=window.resolveCase;window.resolveCase=function(k){const c0=G.cash,b0=G.brand;const r=RC0.apply(this,arguments);const won=G.brand>b0;if(k.role==='pl'){NS.plN=(NS.plN||0)+1;if(won)NS.plWon=(NS.plWon||0)+1;NS.plCash=(NS.plCash||0)+Math.round(G.cash-c0);}else{NS.defN=(NS.defN||0)+1;if(won)NS.defWon=(NS.defWon||0)+1;NS.defCash=(NS.defCash||0)+Math.round(G.cash-c0);}return r;};}
+    // düşmanca devralma kaydı: her girişim için başlangıç günü, prim, ihale sonundaki başarı şansı, oyuncu payı, savunmalar ve sonuç
+    if(typeof window.htoDaily==='function'){const HD0=window.htoDaily;window.htoDaily=function(){const H=G.hto,T0=H&&H.them;let rec=null;
+      if(T0&&T0.st==='tender'&&G.day>=T0.end)rec={d:G.day,t0:T0.t0,prem:T0.prem,stake:Math.round(T0.stake*100)/100,ch:Math.round(htoThemChance()*100)/100,eq:Math.round(G.equity*100)/100,ratio:Math.round(T0.px/Math.max(0.01,G.pub.price)*100)/100,def:Object.keys(T0.d).join('+')};
+      const r=HD0.apply(this,arguments);if(H&&H.them&&!T0)H.them.t0=G.day;if(rec){rec.lost=!!G.over;(NS.hto=NS.hto||[]).push(rec);}return r;};}
     const burn=()=>{const m=monthlyEst();return Math.max(1,(m.rev||0)-(m.profit||0));};
     const nextRound=()=>ROUNDS.find((r,i)=>!G.rounds[r.id]&&(i===0||G.rounds[ROUNDS[i-1].id]));
     for(let d=1;d<365*YRS;d++){step();

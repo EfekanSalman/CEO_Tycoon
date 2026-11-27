@@ -46,14 +46,19 @@ function htoResolve(){const H=G.hto,M=H.mine,c=comp(M.cid);if(!c||c.dead){G.cash
 /* rakip → sen */
 const htoRisk=()=>!!G.pub&&!founderSafe();
 function htoRival(){const mc=marketCap();return liveComps().filter(c=>c.cash>mc*0.6&&c.profit>0&&(G.hto.cool[c.id]||0)<=G.day).sort((a,b)=>b.cash-a.cash)[0];}
-function htoThemChance(){const T=G.hto.them;if(!T||!G.pub)return 0;const ratio=T.px/Math.max(0.01,G.pub.price);
-  return clamp(0.15+(ratio-1)*1.5+T.stake*1.5-(T.d.pill?0.25:0)-(T.d.knight?0.25:0)-(T.d.pr?0.08+Math.max(0,G.life?G.life.conf-50:0)/300:0)-G.equity*0.6,0.03,0.9);}
+/* v172: oran o günün fiyatıyla değil, ihale süresince ortalama fiyatla hesaplanır; fiyat düşüşünün etkisi en çok +%75 (oran farkı 0,5'te tavan).
+   Eskiden ihale sırasında hisse %18 düşünce oran 1,76'ya çıkıyor, dört savunmanın hepsi kurulmuşken bile başarı şansı %60 oluyordu (bot ölçümü). */
+const HTO_RATIO_CAP=0.5;
+const htoRefPx=T=>T.pn?T.ps/T.pn:G.pub.price;
+function htoThemChance(){const T=G.hto.them;if(!T||!G.pub)return 0;const ratio=T.px/Math.max(0.01,htoRefPx(T));
+  return clamp(0.15+Math.min(HTO_RATIO_CAP,ratio-1)*1.5+T.stake*1.5-(T.d.pill?0.25:0)-(T.d.knight?0.25:0)-(T.d.pr?0.08+Math.max(0,G.life?G.life.conf-50:0)/300:0)-G.equity*0.6,0.03,0.9);}
 function htoDaily(){const H=G.hto;if(!H||G.over)return;
   const M=H.mine;if(M){const c=comp(M.cid);if(!c||c.dead){G.cash+=M.paid*0.9;htoLog((LANG_EN?"The target company no longer exists; your stake was liquidated.":'Hedef şirket ortadan kalktı; payın tasfiye edildi.'));H.mine=null;}else if(M.st==='tender'&&G.day>=M.end)htoResolve();}
   const T=H.them;
   if(T){const c=comp(T.cid);if(!c||c.dead||!htoRisk()){H.them=null;htoLog(!htoRisk()?(LANG_EN?"The takeover threat is gone.":'Devralma tehdidi ortadan kalktı.'):(LANG_EN?"The attacking company no longer exists.":'Saldırgan şirket ortadan kalktı.'),'good');return;}
     if(T.st==='build'&&G.day>=T.tAt){T.st='tender';T.px=G.pub.price*T.prem;T.end=G.day+HTO_TDAYS;news((LANG_EN?`${c.name} made a tender offer to your shareholders at $${fx(T.px,2)} per share (${Math.round((T.prem-1)*100)}% premium)! Mount your defense.`:`${c.name}, hissedarlarına hisse başına $${fx(T.px,2)} (%${Math.round((T.prem-1)*100)} prim) ihale teklifi yaptı! Savunmanı kur.`),'bad',true);htoLog((LANG_EN?`${c.name} launched a tender offer.`:`${c.name} ihale teklifi açtı.`),'bad');if(!G.pending&&!UI.modal)triggerChoice('htoatk',{});}
     else if(T.st==='build'&&Math.random()<0.05&&T.stake<0.2){T.stake=Math.min(0.2,T.stake+0.01);}
+    if(T.st==='tender'){T.ps=(T.ps||0)+G.pub.price;T.pn=(T.pn||0)+1;}
     if(T.st==='tender'&&G.day>=T.end){const ch=htoThemChance();
       if(Math.random()<ch){const offer=T.px*G.pub.shares;G.exited={by:c.name,offer,day:G.day,hostile:true};G.wealth=(G.wealth||0)+offer*G.equity;G.over=true;careerRecord('sold');news((LANG_EN?`${c.name} pulled off a hostile takeover. ${G.name} is now theirs.`:`${c.name} düşmanca devralmayı başardı. ${G.name} artık onun.`),'bad',true);setTimeout(()=>{G.speed=0;openModal('exit');},0);}
       else{H.def++;H.them=null;H.cool[c.id]=G.day+540;c.cash*=0.95;if(G.life)G.life.conf=clamp(G.life.conf+8,0,100);G.pub.sent*=1.03;(G.flags=G.flags||{}).htoDef=true;news((LANG_EN?`${c.name}'s tender offer failed! Your shareholders stood by you.`:`${c.name} ihale teklifi başarısız oldu! Hissedarların seninle kaldı.`),'good',true);htoLog((LANG_EN?`${c.name}'s attack was repelled.`:`${c.name} saldırısı püskürtüldü.`),'good');tl('law',(LANG_EN?`${c.name}'s hostile takeover attempt repelled`:`${c.name} düşmanca devralma girişimi püskürtüldü`));ceoXP(80,(LANG_EN?"Takeover defense":'Devralma savunması'));}}
