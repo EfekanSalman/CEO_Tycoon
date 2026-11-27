@@ -1,6 +1,6 @@
 /* ============================== ERROR GUARD ============================== */
 /* Beklenmeyen bir hata oyunu sessizce dondurmasın: oyunu duraklat, durumu kurtarma anahtarına yaz, oyuncuya seçenek ve kopyalanabilir rapor sun. */
-const VER='v177',RESCUE_KEY='silikon-garaj-rescue';
+const VER='v178',RESCUE_KEY='silikon-garaj-rescue';
 const ERR={list:[],open:false,lastRescue:0,quiet:false};
 function errKey(e){const m=(e&&e.message)||String(e),f=((e&&e.stack)||'').split('\n').find(l=>/at /.test(l))||'';return m+'|'+f.trim();}
 function errCatch(src,e,pause=true){
