@@ -39,7 +39,7 @@ function loop(now){
     if(n>=20)acc=0;
     if(n&&now-lastRender>200){lastRender=now;try{render();}catch(e){errCatch((LANG_EN?"render":'çizim'),e,false);}}
   }
-  if(G&&UI.tab==='office'&&!ERR.draw){try{if(UI.rival||UI.branch)drawRival(now);else drawOffice(now);}catch(e){ERR.draw=1;errCatch('ofis',e,false);}}
+  if(G&&(UI.tab==='office'||(UI.tab==='dash'&&document.getElementById('officeCanvas')))&&!ERR.draw){try{if(UI.rival||UI.branch)drawRival(now);else drawOffice(now);}catch(e){ERR.draw=1;errCatch('ofis',e,false);}}
   requestAnimationFrame(loop);
 }
 function shellLang(){if(!LANG_EN)return;const set=(sel,a,v)=>{const el=document.querySelector(sel);if(el)el.setAttribute(a,v);};
