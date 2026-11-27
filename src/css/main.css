@@ -1026,3 +1026,23 @@ body.bd-dragging{cursor:grabbing;user-select:none}
 .ttab.tcards .tc-name>b{font-family:var(--f-display);font-size:16px}
 .eav{display:block;border-radius:50%}
 @media (max-width:520px){.ttab.tcards tbody{grid-template-columns:1fr;padding:8px}}
+/* ---- lansman anı (v177) ---- */
+.lm-card.lm2{align-items:stretch;text-align:left;gap:14px;padding:20px 22px 0;max-width:min(92vw,520px);width:520px;border-top:6px solid var(--cc);overflow:hidden;animation:msIn2 .4s cubic-bezier(.2,1.3,.4,1)}
+.lm-top{display:flex;align-items:center;gap:12px}.lm-id{display:flex;flex-direction:column;min-width:0}
+.lm-ic{flex:none;width:52px;height:52px;border-radius:14px;display:grid;place-items:center;color:var(--cc);background:color-mix(in srgb,var(--cc) 15%,transparent)}
+.lm-ic svg{width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:1.7}
+.lm2 .lm-n{font:800 22px/1.15 var(--f-display);overflow:hidden;text-overflow:ellipsis}
+.lm-mid{display:flex;gap:16px;align-items:center}
+.lm-gauge{position:relative;width:120px;height:120px;flex:none}.lm-gauge svg{width:100%;height:100%}
+.lm-gauge .lm-s{position:absolute;inset:0;display:flex;align-items:baseline;justify-content:center;padding-top:40px}
+.lm2 .lm-v{font:800 34px/1 var(--f-mono)}
+.lm-arc{stroke:var(--warn)}.lmom.good .lm-arc{stroke:var(--ok)}.lmom.bad .lm-arc{stroke:var(--bad)}
+.lm-side{display:flex;flex-direction:column;gap:8px;min-width:0}
+.lm2 .lm-t{font:800 17px var(--f-display);color:var(--ink)}
+.lm-q{font-size:13px;padding:6px 10px;border-left:3px solid var(--cc);background:var(--panel2);border-radius:0 8px 8px 0}.lm-q div{color:var(--muted);font-style:italic}
+.lm-facts{display:flex;flex-direction:column;gap:3px;font-size:13px;border-top:1px solid var(--line);padding-top:10px}
+.lm-bar{height:4px;margin:4px -22px 0;background:var(--soft)}.lm-bar i{display:block;height:100%;background:var(--cc);animation:lmBar 6s linear forwards}
+@keyframes lmBar{from{width:100%}to{width:0}}
+@keyframes msIn2{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:none}}
+@media (max-width:520px){.lm-mid{flex-direction:column;align-items:stretch}.lm-gauge{margin:0 auto}}
+@media (prefers-reduced-motion:reduce){.lm-card.lm2,.lm-bar i{animation:none}}

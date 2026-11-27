@@ -21,6 +21,10 @@ const {open,startScn}=require('../tools/page');
     const av=document.querySelectorAll('table.ttab.tcards .tc-av svg.eav').length,n=G.emps.length;act('teamview',{v:'table'});render();const t1=q()&&!q().classList.contains('tcards');act('teamview',{v:'cards'});render();
     return {c0,av,n,t1};});
   console.log('ekip görünümü:',JSON.stringify(tv));ok(tv.c0&&tv.t1&&tv.av>=1,'team view toggle');
+  // lansman anı (v177): kart, puan halkası, iki yayın alıntısı ve rakip karşılaştırması; tıklayınca kapanır
+  const lm=await pg.evaluate(()=>{G.speed=1;UI.modal=null;const p=G.products.find(x=>x.owner==='P');p.review=8.4;launchMoment(p);const el=document.getElementById('lmom');
+    const r={card:!!el,q:el?el.querySelectorAll('.lm-q').length:0,gauge:!!(el&&el.querySelector('.lm-arc')),facts:el?el.querySelector('.lm-facts').textContent:''};if(el)el.click();r.closed=!document.getElementById('lmom');G.speed=0;return r;});
+  console.log('lansman anı:',JSON.stringify(lm));ok(lm.card&&lm.q===2&&lm.gauge&&lm.closed&&lm.facts.length>10,'launch moment');
   console.log('kilometre taşları:',JSON.stringify(r));
   ok(r.silent,'silent first');ok(r.queuedWhilePaused,'queued while paused');ok(r.shown,'card shown');ok(r.once,'only once');
   console.log('ERRS',errs.length,JSON.stringify(errs.slice(0,3)));if(fail||errs.length)process.exitCode=1;await b.close();})();
